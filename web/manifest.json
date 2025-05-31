@@ -1,6 +1,6 @@
 {
-    "name": "berita_12",
-    "short_name": "berita_12",
+    "name": "berita12",
+    "short_name": "berita12",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
