@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:berita12/views/splash_screen_page.dart';
 import 'package:berita12/views/login_page.dart';
 import 'package:berita12/views/register_page.dart';
+import 'package:berita12/views/profile_page.dart';
 // import 'package:berita12/views/forgot_password_page.dart';
-import 'package:berita12/views/home_page.dart'; // Jika sudah ada halaman utama
+import 'package:berita12/views/home_page.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         // '/forgot-password': (context) => const ForgotPasswordPage(),
+        '/profile': (context) => const ProfilePage(),
         '/home': (context) => const HomePage(), // ganti ini sesuai halaman utama kamu
       },
     );
