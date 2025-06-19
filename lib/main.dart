@@ -1,3 +1,4 @@
+import 'package:berita12/views/news_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:berita12/views/splash_screen_page.dart';
 import 'package:berita12/views/login_page.dart';
@@ -7,6 +8,7 @@ import 'package:berita12/views/profile_page.dart';
 import 'package:berita12/views/home_page.dart'; 
 import 'package:berita12/views/bookmark_page.dart'; 
 import 'package:berita12/views/add_news_page.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
         useMaterial3: true,
       ),
-      initialRoute: '/bookmark', // Ganti dengan rute awal yang diinginkan
+      initialRoute: '/news', // Ganti dengan rute awal yang diinginkan
       routes: {
         // '/': (context) => const SplashScreenPage(),
         // '/login': (context) => const LoginPage(),
@@ -33,6 +35,8 @@ class MyApp extends StatelessWidget {
         '/bookmark': (context) => const BookmarkPage(), 
         '/add': (context) => const CreateNewsPage(), 
         '/profile': (context) => const ProfilePage(),
+        '/news': (context) => const NewsDetailPage(),
+
       },
     );
   }
