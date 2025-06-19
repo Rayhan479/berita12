@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:berita12/views/splash_screen_page.dart';
 import 'package:berita12/views/login_page.dart';
 import 'package:berita12/views/register_page.dart';
+import 'package:berita12/views/profile_page.dart';
 // import 'package:berita12/views/forgot_password_page.dart';
 import 'package:berita12/views/home_page.dart'; // Jika sudah ada halaman utama
 import 'package:berita12/views/bookmark_page.dart'; 

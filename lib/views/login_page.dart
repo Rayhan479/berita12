@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+// import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isUsernameFocused = false;
   bool isPasswordFocused = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -44,9 +48,55 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(context, '/home');
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://45.149.187.204:3000/api/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "email": usernameController.text,
+          "password": passwordController.text,
+        }),
+      );
+
+      final data = json.decode(response.body);
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+        // ✅ SIMPAN TOKEN
+        // final token = data['token'];
+        // final prefs = await SharedPreferences.getInstance();
+        // await prefs.setString('token', token);
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login Berhasil!')));
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['message'] ?? 'Login gagal')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Terjadi kesalahan jaringan')),
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -57,7 +107,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Gradient background
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -67,8 +116,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-
-          // Decorative circle
           Positioned(
             bottom: -50,
             right: -50,
@@ -81,8 +128,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-
-          // Main content
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -92,7 +137,6 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-
                     Center(
                       child: Column(
                         children: [
@@ -108,9 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 40),
-
                     const Text.rich(
                       TextSpan(
                         text: '* ',
@@ -124,7 +166,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-
                     TextFormField(
                       controller: usernameController,
                       focusNode: usernameFocus,
@@ -148,7 +189,6 @@ class _LoginPageState extends State<LoginPage> {
                                   : null,
                     ),
                     const SizedBox(height: 20),
-
                     const Text.rich(
                       TextSpan(
                         text: '* ',
@@ -162,7 +202,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-
                     TextFormField(
                       controller: passwordController,
                       focusNode: passwordFocus,
@@ -187,7 +226,6 @@ class _LoginPageState extends State<LoginPage> {
                                   : null,
                     ),
                     const SizedBox(height: 20),
-
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -200,15 +238,21 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        onPressed: _submitForm,
-                        child: const Text(
-                          'Masuk',
-                          style: TextStyle(fontSize: 18),
-                        ),
+                        onPressed: isLoading ? null : _submitForm,
+                        child:
+                            isLoading
+                                ? const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.blue,
+                                  ),
+                                )
+                                : const Text(
+                                  'Masuk',
+                                  style: TextStyle(fontSize: 18),
+                                ),
                       ),
                     ),
                     const SizedBox(height: 10),
-
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
@@ -221,9 +265,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-
                     const Spacer(),
-
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
