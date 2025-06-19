@@ -17,27 +17,30 @@ class _BookmarkPageState extends State<BookmarkPage>
     "Latest",
     "Teknologi",
     "Science",
-    "Politik"
+    "Politik",
   ];
 
   final List<Map<String, String>> _beritaList = [
     {
       'title': 'Wow USA Develops news way faster ....',
-      'image': 'https://image.idntimes.com/post/20191216/2-9d35e61e811b05aec40f694b1c1cc187.jpg?tr=w-1920,f-webp,q-75&width=1920&format=webp&quality=75',
+      'image':
+          'https://image.idntimes.com/post/20191216/2-9d35e61e811b05aec40f694b1c1cc187.jpg?tr=w-1920,f-webp,q-75&width=1920&format=webp&quality=75',
       'likes': '316K',
-      'comments': '110K'
+      'comments': '110K',
     },
     {
       'title': 'Wow USA Develops news way faster ....',
-      'image': 'https://cdn1.katadata.co.id/media/images/thumb/2025/04/24/BytePlus-2025_04_24-19_38_38_ac9eaf82bceb2d35497b001e844b0058_960x640_thumb.jpeg',
+      'image':
+          'https://cdn1.katadata.co.id/media/images/thumb/2025/04/24/BytePlus-2025_04_24-19_38_38_ac9eaf82bceb2d35497b001e844b0058_960x640_thumb.jpeg',
       'likes': '316K',
-      'comments': '110K'
+      'comments': '110K',
     },
     {
       'title': 'Wow USA Develops news way faster ....',
-      'image': 'https://media.licdn.com/dms/image/D5612AQHVP143zP7nLg/article-cover_image-shrink_720_1280/0/1686807804814?e=2147483647&v=beta&t=S8NCUTpngKg2mYOSklk6rwyFLicGCHBnu1ZQ5gj3NbM',
+      'image':
+          'https://media.licdn.com/dms/image/D5612AQHVP143zP7nLg/article-cover_image-shrink_720_1280/0/1686807804814?e=2147483647&v=beta&t=S8NCUTpngKg2mYOSklk6rwyFLicGCHBnu1ZQ5gj3NbM',
       'likes': '316K',
-      'comments': '110K'
+      'comments': '110K',
     },
   ];
 
@@ -66,15 +69,17 @@ class _BookmarkPageState extends State<BookmarkPage>
                 Row(
                   children: [
                     Image.asset(
-                      'assets/images/logo_berita12.png', 
+                      'assets/images/logo_berita12.png',
                       width: 70,
                       height: 70,
                     ),
                     const SizedBox(width: 8),
                     const Text(
                       "My Bookmark",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const Spacer(),
                     IconButton(
@@ -83,10 +88,12 @@ class _BookmarkPageState extends State<BookmarkPage>
                         decoration: BoxDecoration(
                           color: Color(0x4D1E73BE),
                           borderRadius: BorderRadius.circular(8),
-                          shape: BoxShape.rectangle
+                          shape: BoxShape.rectangle,
                         ),
-                        child: const Icon(Icons.filter_list_rounded,
-                          color: Color(0xFF1E73BE),),
+                        child: const Icon(
+                          Icons.filter_list_rounded,
+                          color: Color(0xFF1E73BE),
+                        ),
                       ),
                       onPressed: () {},
                     ),
@@ -107,7 +114,6 @@ class _BookmarkPageState extends State<BookmarkPage>
                       prefixIcon: Icon(Icons.search),
                     ),
                   ),
-                  
                 ),
               ],
             ),
@@ -133,8 +139,10 @@ class _BookmarkPageState extends State<BookmarkPage>
               itemBuilder: (context, index) {
                 final berita = _beritaList[index];
                 return Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -159,78 +167,95 @@ class _BookmarkPageState extends State<BookmarkPage>
                               Text(
                                 berita['title']!,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  const Icon(Icons.thumb_up_alt_outlined,
-                                      size: 16, color: Colors.blue),
+                                  const Icon(
+                                    Icons.thumb_up_alt_outlined,
+                                    size: 16,
+                                    color: Colors.blue,
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(berita['likes']!),
                                   const SizedBox(width: 12),
-                                  const Icon(Icons.chat_bubble_outline,
-                                      size: 16, color: Colors.grey),
+                                  const Icon(
+                                    Icons.chat_bubble_outline,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(berita['comments']!),
                                   const Spacer(),
-                                  const Icon(Icons.bookmark,
-                                      color: Colors.blue),
+                                  const Icon(
+                                    Icons.bookmark,
+                                    color: Colors.blue,
+                                  ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
                 );
               },
             ),
-          )
+          ),
         ],
       ),
       // Bottom NavBar
       bottomNavigationBar: BottomAppBar(
-  shape: const CircularNotchedRectangle(),
-  color: const Color(0xFF1E73BE),
-  notchMargin: 8,
-  child: Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0), // Atur padding di sini
-    child: SizedBox(
-      height: 5,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/home');
-            },
-            icon: const Icon(Icons.home_outlined, color: Colors.white),
+        shape: const CircularNotchedRectangle(),
+        color: const Color(0xFF1E73BE),
+        notchMargin: 8,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 2.0,
+            vertical: 8.0,
+          ), // Atur padding di sini
+          child: SizedBox(
+            height: 5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/home');
+                  },
+                  icon: const Icon(Icons.home_outlined, color: Colors.white),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/bookmark');
+                  },
+                  icon: const Icon(Icons.bookmark, color: Colors.white),
+                ),
+                const SizedBox(width: 10), // ruang untuk FAB
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/mynews');
+                  },
+                  icon: const Icon(
+                    Icons.how_to_vote_outlined,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                  icon: const Icon(Icons.person_outline, color: Colors.white),
+                ),
+              ],
+            ),
           ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/bookmark');
-            },
-            icon: const Icon(Icons.bookmark, color: Colors.white),
-          ),
-          const SizedBox(width: 10), // ruang untuk FAB
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.how_to_vote_outlined, color: Colors.white),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile');
-            },
-            icon: const Icon(Icons.person_outline, color: Colors.white),
-          ),
-        ],
+        ),
       ),
-    ),
-  ),
-),
 
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
@@ -238,7 +263,7 @@ class _BookmarkPageState extends State<BookmarkPage>
           Navigator.pushNamed(context, '/add');
         },
         backgroundColor: Color(0xFF1E73BE),
-        child: const Icon(Icons.add, color: Colors.white,),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

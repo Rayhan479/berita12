@@ -31,14 +31,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
     String email = emailController.text;
     String password = passwordController.text;
 
-    // Simpan ke penyimpanan lokal atau backend sesuai kebutuhan
-    print("Saved: $name, $email, $password");
+    // Simulasi penyimpanan
+    debugPrint("Saved: $name, $email, $password");
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Profile updated!")));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Profile updated!")),
+    );
 
-    Navigator.pop(context); // kembali ke ProfilePage
+    // Kirim data kembali ke halaman profile
+    Navigator.pop(context, {
+      'name': name,
+      'email': email,
+      'password': password,
+      'image': _imageFile,
+    });
   }
 
   @override
@@ -65,35 +71,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   const Text(
                     'Edit Profile',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
               Center(
-                child: Stack(
-                  alignment: Alignment.center,
+                child: Column(
                   children: [
                     CircleAvatar(
                       radius: 60,
-                      backgroundImage:
-                          _imageFile != null
-                              ? FileImage(_imageFile!)
-                              : const AssetImage(
-                                    'assets/images/profile_placeholder.png',
-                                  )
-                                  as ImageProvider,
+                      backgroundImage: _imageFile != null
+                          ? FileImage(_imageFile!)
+                          : const AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
                     ),
-                    Positioned(
-                      bottom: 0,
-                      child: TextButton(
-                        onPressed: _pickImage,
-                        child: const Text(
-                          'Tambah Foto',
-                          style: TextStyle(
-                            color: Color(0xFF1E73BE),
-                            fontWeight: FontWeight.bold,
-                          ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: _pickImage,
+                      child: const Text(
+                        'Tambah Foto',
+                        style: TextStyle(
+                          color: Color(0xFF1E73BE),
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -117,6 +116,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1E73BE),
+                    foregroundColor: Colors.white, // Warna teks jadi putih
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

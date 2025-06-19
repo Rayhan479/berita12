@@ -1,154 +1,197 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'login_page.dart'; // Pastikan path ini sesuai dengan struktur folder project kamu
-import 'home_page.dart';
-import 'edit_profile_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String name = 'Berita12';
+  String email = 'berita12@gmail.com';
+  String password = '********';
+  File? imageFile;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 6.0,
-        color: const Color(0xFF1E73BE),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+      appBar: AppBar(
+        toolbarHeight: 80,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              },
+            Image.asset(
+              'assets/images/logo_berita12.png',
+              width: 70,
             ),
-            IconButton(
-              icon: const Icon(Icons.bookmark_outline, color: Colors.white),
-              onPressed: () {
-                // Navigasi ke Disimpan
-              },
-            ),
-            const SizedBox(width: 48), // ruang FAB
-            IconButton(
-              icon: const Icon(Icons.poll, color: Colors.white),
-              onPressed: () {
-                // Navigasi ke My News
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.person_outline, color: Colors.white),
-              onPressed: () {}, // Sudah di halaman Profile
+            const SizedBox(width: 8),
+            const Text(
+              'Profile',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Tambahkan logika add post jika perlu
-        },
-        backgroundColor: const Color(0xFF1E73BE),
-        child: const Icon(Icons.add, size: 32),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Image.asset(
-                    'assets/images/logo_berita12.png', // Ganti path logo sesuai file kamu
-                    height: 40,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Profile',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                ],
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
+          Center(
+            child: CircleAvatar(
+              radius: 50,
+              backgroundImage: imageFile != null
+                  ? FileImage(imageFile!)
+                  : const AssetImage('assets/images/profile_placeholder.png')
+                      as ImageProvider,
+            ),
+          ),
+          const SizedBox(height: 10),
+          GestureDetector(
+            onTap: () async {
+              final result = await Navigator.pushNamed(context, '/editprofile');
+              if (result != null && result is Map) {
+                setState(() {
+                  name = result['name'] ?? name;
+                  email = result['email'] ?? email;
+                  password = result['password'] ?? password;
+                  imageFile = result['image'] ?? imageFile;
+                });
+              }
+            },
+            child: const Text(
+              'Edit Profile',
+              style: TextStyle(
+                color: Color(0xFF1E73BE),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
-              const SizedBox(height: 24),
-              const CircleAvatar(radius: 60, backgroundColor: Colors.grey),
-              const SizedBox(height: 12),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EditProfilePage(),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              children: [
+                TextField(
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 214, 211, 211),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
-                  );
+                    hintText: name,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 214, 211, 211),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    hintText: email,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  obscureText: true,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 214, 211, 211),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    hintText: password,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1E73BE),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/login');
                 },
-                child: const Text(
-                  'Edit Profile',
-                  style: TextStyle(
-                    color: Color(0xFF1E73BE),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: const Text('Logout'),
               ),
-              const SizedBox(height: 24),
-              _buildTextField('Berita12', false),
-              const SizedBox(height: 12),
-              _buildTextField('berita12@gmail.com', false),
-              const SizedBox(height: 12),
-              _buildTextField('*********', true),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E73BE),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        color: const Color(0xFF1E73BE),
+        notchMargin: 8,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
+          child: SizedBox(
+            height: 5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
-                      ),
-                      (Route<dynamic> route) => false,
-                    );
+                    Navigator.pushNamed(context, '/home');
                   },
-                  child: const Text('Logout', style: TextStyle(fontSize: 16)),
+                  icon: const Icon(Icons.home_outlined, color: Colors.white),
                 ),
-              ),
-            ],
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/bookmark');
+                  },
+                  icon: const Icon(Icons.bookmark_outline, color: Colors.white),
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/mynews');
+                  },
+                  icon: const Icon(Icons.how_to_vote_outlined, color: Colors.white),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                  icon: const Icon(Icons.person, color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  static Widget _buildTextField(String hint, bool obscureText) {
-    return TextField(
-      obscureText: obscureText,
-      enabled: false,
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: Colors.grey[300],
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        onPressed: () {
+          Navigator.pushNamed(context, '/add');
+        },
+        backgroundColor: const Color(0xFF1E73BE),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

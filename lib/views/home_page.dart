@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:berita12/views/profile_page.dart';
+// import 'package:berita12/views/bookmark_page.dart';
+// import 'package:berita12/views/profile_page.dart';
+// import 'package:berita12/views/add_news_page.dart';
 
 void main() {
   runApp(
@@ -252,29 +254,64 @@ class _HomePageState extends State<HomePage>
         },
       ),
 
+      // Bottom NavBar
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         color: const Color(0xFF1E73BE),
-        notchMargin: 6.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(icon: const Icon(Icons.home, color: Colors.white,), onPressed: () {}),
-            IconButton(icon: const Icon(Icons.bookmark_outline, color: Colors.white,), onPressed: () {}),
-            const SizedBox(width: 48), // space for the FAB
-            IconButton(icon: const Icon(Icons.poll, color: Colors.white,), onPressed: () {}),
-            IconButton(icon: const Icon(Icons.person_outline, color: Colors.white,), onPressed: () {}),
-          ],
+        notchMargin: 8,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 2.0,
+            vertical: 8.0,
+          ), // Atur padding di sini
+          child: SizedBox(
+            height: 5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/home');
+                  },
+                  icon: const Icon(Icons.home, color: Colors.white),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/bookmark');
+                  },
+                  icon: const Icon(Icons.bookmark_outline, color: Colors.white),
+                ),
+                const SizedBox(width: 10), // ruang untuk FAB
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/mynews');
+                  },
+                  icon: const Icon(
+                    Icons.how_to_vote_outlined,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                  icon: const Icon(Icons.person_outline, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
+        onPressed: () {
+          Navigator.pushNamed(context, '/add');
+        },
         backgroundColor: Color(0xFF1E73BE),
-        child: const Icon(Icons.add, color: Colors.white,),
-        onPressed: () {},
+        child: const Icon(Icons.add, color: Colors.white),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
