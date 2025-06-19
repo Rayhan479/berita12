@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
         // '/register': (context) => const RegisterPage(), 
         '/home': (context) => const HomePage(), 
         '/bookmark': (context) => const BookmarkPage(), 
+        '/profile': (context) => const ProfilePage(),
       },
     );
   }

@@ -210,7 +210,9 @@ class _BookmarkPageState extends State<BookmarkPage>
             icon: const Icon(Icons.home_outlined, color: Colors.white),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/bookmark');
+            },
             icon: const Icon(Icons.bookmark, color: Colors.white),
           ),
           const SizedBox(width: 10), // ruang untuk FAB
@@ -219,7 +221,9 @@ class _BookmarkPageState extends State<BookmarkPage>
             icon: const Icon(Icons.how_to_vote_outlined, color: Colors.white),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/profile');
+            },
             icon: const Icon(Icons.person_outline, color: Colors.white),
           ),
         ],

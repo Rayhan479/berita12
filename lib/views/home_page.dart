@@ -241,7 +241,9 @@ class _HomePageState extends State<HomePage>
             }),
             const SizedBox(width: 48), // space for the FAB
             IconButton(icon: const Icon(Icons.poll, color: Colors.white,), onPressed: () {}),
-            IconButton(icon: const Icon(Icons.person_outline, color: Colors.white,), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.person_outline, color: Colors.white,), onPressed: () {
+              Navigator.pushNamed(context, '/profile');
+            }),
           ],
         ),
       ),
