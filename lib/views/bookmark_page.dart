@@ -234,7 +234,9 @@ class _BookmarkPageState extends State<BookmarkPage>
 
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/add');
+        },
         backgroundColor: Color(0xFF1E73BE),
         child: const Icon(Icons.add, color: Colors.white,),
       ),

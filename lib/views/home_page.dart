@@ -252,7 +252,9 @@ class _HomePageState extends State<HomePage>
         shape: const CircleBorder(),
         backgroundColor: Color(0xFF1E73BE),
         child: const Icon(Icons.add, color: Colors.white,),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/add');
+        },
       ),
     );
   }
