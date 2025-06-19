@@ -1,3 +1,4 @@
+import 'package:berita12/views/news_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:berita12/views/splash_screen_page.dart';
 import 'package:berita12/views/login_page.dart';
