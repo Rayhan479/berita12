@@ -1,173 +1,153 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'login_page.dart'; // Pastikan path ini sesuai dengan struktur folder project kamu
+import 'home_page.dart';
+import 'edit_profile_page.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  String? name;
-  String? email;
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchProfile();
-  }
-
-  Future<void> _fetchProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
-    if (token == null) {
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
-    try {
-      final response = await http.get(
-        Uri.parse('http://45.149.187.204:3000/api/user/profile'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          name = data['name'];
-          email = data['email'];
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: const _BottomNavBar(),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Image.asset(
-                    'assets/images/logo_berita12.png', // Ganti dengan logo aplikasi
-                    height: 40,
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'Profile',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : name == null
-                  ? const Center(child: Text('Gagal memuat profil'))
-                  : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Nama: $name', style: const TextStyle(fontSize: 18)),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Email: $email',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.remove('token');
-                          if (context.mounted) {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        child: const Text('Logout'),
-                      ),
-                    ],
-                  ),
-            ],
-          ),
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 6.0,
+        color: const Color(0xFF1E73BE),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.bookmark_outline, color: Colors.white),
+              onPressed: () {
+                // Navigasi ke Disimpan
+              },
+            ),
+            const SizedBox(width: 48), // ruang FAB
+            IconButton(
+              icon: const Icon(Icons.poll, color: Colors.white),
+              onPressed: () {
+                // Navigasi ke My News
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.person_outline, color: Colors.white),
+              onPressed: () {}, // Sudah di halaman Profile
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigasi ke halaman tambah post
+          // Tambahkan logika add post jika perlu
         },
-        backgroundColor: Colors.blue,
-        shape: const CircleBorder(),
+        backgroundColor: const Color(0xFF1E73BE),
         child: const Icon(Icons.add, size: 32),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
-  }
-}
-
-class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar();
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
-      notchMargin: 8,
-      child: SizedBox(
-        height: 60,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.home_outlined, 'Home', () {
-              Navigator.pushNamed(context, '/home');
-            }),
-            _buildNavItem(Icons.bookmark_border, 'Disimpan', () {}),
-            const SizedBox(width: 40),
-            _buildNavItem(Icons.poll_outlined, 'Polling', () {}),
-            _buildNavItem(Icons.person_outline, 'Profile', () {}),
-          ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    'assets/images/logo_berita12.png', // Ganti path logo sesuai file kamu
+                    height: 40,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Profile',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const CircleAvatar(radius: 60, backgroundColor: Colors.grey),
+              const SizedBox(height: 12),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditProfilePage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Edit Profile',
+                  style: TextStyle(
+                    color: Color(0xFF1E73BE),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildTextField('Berita12', false),
+              const SizedBox(height: 12),
+              _buildTextField('berita12@gmail.com', false),
+              const SizedBox(height: 12),
+              _buildTextField('*********', true),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1E73BE),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                  child: const Text('Logout', style: TextStyle(fontSize: 16)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 8),
-          Icon(icon, color: Colors.blue),
-          Text(label, style: const TextStyle(fontSize: 12, color: Colors.blue)),
-        ],
+  static Widget _buildTextField(String hint, bool obscureText) {
+    return TextField(
+      obscureText: obscureText,
+      enabled: false,
+      decoration: InputDecoration(
+        hintText: hint,
+        filled: true,
+        fillColor: Colors.grey[300],
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
       ),
     );
   }
