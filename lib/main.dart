@@ -4,6 +4,7 @@ import 'package:berita12/views/login_page.dart';
 import 'package:berita12/views/register_page.dart';
 // import 'package:berita12/views/forgot_password_page.dart';
 import 'package:berita12/views/home_page.dart'; // Jika sudah ada halaman utama
+import 'package:berita12/views/bookmark_page.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -21,13 +22,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
         useMaterial3: true,
       ),
-      initialRoute: '/',
+      initialRoute: '/bookmark', // Ganti dengan rute awal yang diinginkan
       routes: {
-        '/': (context) => const SplashScreenPage(),
-        '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegisterPage(),
-        // '/forgot-password': (context) => const ForgotPasswordPage(),
-        '/home': (context) => const HomePage(), // ganti ini sesuai halaman utama kamu
+        // '/': (context) => const SplashScreenPage(),
+        // '/login': (context) => const LoginPage(),
+        // '/register': (context) => const RegisterPage(), 
+        '/home': (context) => const HomePage(), 
+        '/bookmark': (context) => const BookmarkPage(), 
       },
     );
   }
