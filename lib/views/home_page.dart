@@ -92,7 +92,9 @@ class _HomePageState extends State<HomePage>
                 color: Color(0xFF1E73BE),
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/notification');
+            },
           ),
         ],
       ),
