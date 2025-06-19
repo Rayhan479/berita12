@@ -9,6 +9,7 @@ import 'package:berita12/views/home_page.dart';
 import 'package:berita12/views/bookmark_page.dart';
 import 'package:berita12/views/add_news_page.dart';
 import 'package:berita12/views/my_news_page.dart';
+import 'package:berita12/views/notification_page.dart';
 
 void main() {
   runApp(const MyApp());
