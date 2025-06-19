@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage>
         elevation: 0,
         title: Row(
           children: [
-            Image.asset('assets/images/logo_berita12.png', height: 60),
+            Image.asset('assets/images/logo_berita12.png', height: 70),
             const SizedBox(width: 10),
             Expanded(
               child: TextField(
@@ -259,28 +259,11 @@ class _HomePageState extends State<HomePage>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(
-              icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.bookmark_outline, color: Colors.white),
-              onPressed: () {},
-            ),
+            IconButton(icon: const Icon(Icons.home, color: Colors.white,), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.bookmark_outline, color: Colors.white,), onPressed: () {}),
             const SizedBox(width: 48), // space for the FAB
-            IconButton(
-              icon: const Icon(Icons.poll, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.person_outline, color: Colors.white),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
+            IconButton(icon: const Icon(Icons.poll, color: Colors.white,), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.person_outline, color: Colors.white,), onPressed: () {}),
           ],
         ),
       ),
@@ -289,7 +272,7 @@ class _HomePageState extends State<HomePage>
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         backgroundColor: Color(0xFF1E73BE),
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white,),
         onPressed: () {},
       ),
     );
