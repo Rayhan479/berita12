@@ -10,7 +10,12 @@ class CreateNewsPage extends StatefulWidget {
 
 class _CreateNewsPageState extends State<CreateNewsPage> {
   String? selectedCategory;
-  final List<String> categories = ["Teknologi", "Politik", "Science", "Olahraga"];
+  final List<String> categories = [
+    "Teknologi",
+    "Politik",
+    "Science",
+    "Olahraga",
+  ];
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController tagController = TextEditingController();
@@ -57,7 +62,10 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                     children: const [
                       Icon(Icons.add, size: 28, color: Colors.blue),
                       SizedBox(height: 4),
-                      Text("Add Cover Photos", style: TextStyle(color: Colors.black54)),
+                      Text(
+                        "Add Cover Photos",
+                        style: TextStyle(color: Colors.black54),
+                      ),
                     ],
                   ),
                 ),
@@ -66,7 +74,10 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
             const SizedBox(height: 24),
 
             // ✅ Tahap 3: News Details
-            const Text("News Details", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              "News Details",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 16),
 
             const Text("Title*", style: TextStyle(fontWeight: FontWeight.w500)),
@@ -76,29 +87,40 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
               decoration: InputDecoration(
                 hintText: "Title",
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
             ),
             const SizedBox(height: 16),
 
-            const Text("Select Category*", style: TextStyle(fontWeight: FontWeight.w500)),
+            const Text(
+              "Select Category*",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                 hintText: "Select Category",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
               value: selectedCategory,
-              items: categories.map((cat) {
-                return DropdownMenuItem(value: cat, child: Text(cat));
-              }).toList(),
+              items:
+                  categories.map((cat) {
+                    return DropdownMenuItem(value: cat, child: Text(cat));
+                  }).toList(),
               onChanged: (val) => setState(() => selectedCategory = val),
             ),
             const SizedBox(height: 20),
 
             // ✅ Tahap 4: Editor Artikel
-            const Text("Add News/Article*", style: TextStyle(fontWeight: FontWeight.w500)),
+            const Text(
+              "Add News/Article*",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
             const SizedBox(height: 6),
 
             // Toolbar sederhana
@@ -123,20 +145,27 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
               maxLines: 6,
               decoration: InputDecoration(
                 hintText: "Type News/Article Here...",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
             const SizedBox(height: 20),
 
             // ✅ Tahap 5: Tag
-            const Text("Add Tag*", style: TextStyle(fontWeight: FontWeight.w500)),
+            const Text(
+              "Add Tag*",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
             const SizedBox(height: 6),
             TextField(
               controller: tagController,
               decoration: InputDecoration(
                 hintText: "Tag",
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -151,9 +180,15 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                 ),
-                child: const Text("Publis Now", style: TextStyle(color: Colors.white),),
+                child: const Text(
+                  "Publis Now",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
             const SizedBox(height: 70), // agar tidak tertutup navbar
@@ -161,49 +196,61 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
         ),
       ),
 
-      // ✅ Tahap 7: Bottom Navigation Bar
+      // Bottom NavBar
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
         color: const Color(0xFF1E73BE),
+        notchMargin: 8,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 2.0,
+            vertical: 8.0,
+          ), // Atur padding di sini
           child: SizedBox(
-            height: 60,
+            height: 5,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/home');
-                    },
-                    icon: const Icon(Icons.home_outlined, color: Colors.white)),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/home');
+                  },
+                  icon: const Icon(Icons.home_outlined, color: Colors.white),
+                ),
                 IconButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/bookmark');
-                    },
-                    icon: const Icon(Icons.bookmark_border, color: Colors.white)),
-                const SizedBox(width: 40), // space for FAB
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/bookmark');
+                  },
+                  icon: const Icon(Icons.bookmark_outline, color: Colors.white),
+                ),
+                const SizedBox(width: 10), // ruang untuk FAB
                 IconButton(
-                    onPressed: () {
-
-                    },
-                    icon: const Icon(Icons.article_outlined, color: Colors.white)),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/mynews');
+                  },
+                  icon: const Icon(
+                    Icons.how_to_vote_outlined,
+                    color: Colors.white,
+                  ),
+                ),
                 IconButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/profile');
-                    },
-                    icon: const Icon(Icons.person_outline, color: Colors.white)),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                  icon: const Icon(Icons.person_outline, color: Colors.white),
+                ),
               ],
             ),
           ),
         ),
       ),
+
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
-        tooltip: "Add News",
-        backgroundColor: const Color(0xFF1E73BE),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/add');
+        },
+        backgroundColor: Color(0xFF1E73BE),
         child: const Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
