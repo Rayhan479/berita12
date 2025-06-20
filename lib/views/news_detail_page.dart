@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NewsDetailPage extends StatelessWidget {
-  const NewsDetailPage({Key? key}) : super(key: key);
+  const NewsDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -9,7 +9,7 @@ class NewsDetailPage extends StatelessWidget {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,   
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xff1E73BE)),
           onPressed: () {
@@ -37,7 +37,10 @@ class NewsDetailPage extends StatelessWidget {
                 shape: BoxShape.rectangle,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.bookmark_border, color: Color(0xff1E73BE)),
+              child: const Icon(
+                Icons.bookmark_border,
+                color: Color(0xff1E73BE),
+              ),
             ),
             onPressed: () {},
           ),
@@ -68,10 +71,7 @@ class NewsDetailPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: const Text(
                 'BlaBlaBlaBlaBlaBlaBlaBlaBlaBlaBlaBlaBlaBlaBlaBIBlaBlaBlaBI',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 12),
@@ -80,24 +80,41 @@ class NewsDetailPage extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      
                       border: Border.all(color: Color(0xff1E73BE)),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text('Technologia', style: TextStyle(color: Color(0xff1E73BE)),),
+                    child: const Text(
+                      'Technologia',
+                      style: TextStyle(color: Color(0xff1E73BE)),
+                    ),
                   ),
                   const SizedBox(width: 12),
-                  const Icon(Icons.thumb_up, size: 16, color: Color(0xff1E73BE)),
+                  const Icon(
+                    Icons.thumb_up,
+                    size: 16,
+                    color: Color(0xff1E73BE),
+                  ),
                   const SizedBox(width: 4),
                   const Text('316K'),
                   const SizedBox(width: 12),
-                  const Icon(Icons.chat_bubble_outline, size: 16, color: Color(0xff1E73BE)),
+                  const Icon(
+                    Icons.chat_bubble_outline,
+                    size: 16,
+                    color: Color(0xff1E73BE),
+                  ),
                   const SizedBox(width: 4),
                   const Text('110K'),
                   const SizedBox(width: 12),
-                  const Icon(Icons.remove_red_eye, size: 16, color: Color(0xff1E73BE)),
+                  const Icon(
+                    Icons.remove_red_eye,
+                    size: 16,
+                    color: Color(0xff1E73BE),
+                  ),
                   const SizedBox(width: 4),
                   const Text('110K'),
                 ],
@@ -134,43 +151,53 @@ class NewsDetailPage extends StatelessWidget {
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                
+
                 children: const [
-                  Chip(label: Text('#Technologi', 
-                    style: TextStyle(color: Color(0xff1e73be)),
-                  ), 
+                  Chip(
+                    label: Text(
+                      '#Technologi',
+                      style: TextStyle(color: Color(0xff1e73be)),
+                    ),
                     shape: RoundedRectangleBorder(
                       side: BorderSide(color: Color(0xff1E73BE)),
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
                   ),
-                  Chip(label: Text('#AI',
-                    style: TextStyle(color: Color(0xff1e73be)),
-                  ), 
+                  Chip(
+                    label: Text(
+                      '#AI',
+                      style: TextStyle(color: Color(0xff1e73be)),
+                    ),
                     shape: RoundedRectangleBorder(
                       side: BorderSide(color: Color(0xff1E73BE)),
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
                   ),
-                  Chip(label: Text('#Chat gpt',
-                    style: TextStyle(color: Color(0xff1e73be)),
-                  ), 
+                  Chip(
+                    label: Text(
+                      '#Chat gpt',
+                      style: TextStyle(color: Color(0xff1e73be)),
+                    ),
                     shape: RoundedRectangleBorder(
                       side: BorderSide(color: Color(0xff1E73BE)),
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
                   ),
-                  Chip(label: Text('Technologi',
-                    style: TextStyle(color: Color(0xff1e73be)),
-                  ), 
+                  Chip(
+                    label: Text(
+                      'Technologi',
+                      style: TextStyle(color: Color(0xff1e73be)),
+                    ),
                     shape: RoundedRectangleBorder(
                       side: BorderSide(color: Color(0xff1E73BE)),
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
                   ),
-                  Chip(label: Text('Technologi',
-                    style: TextStyle(color: Color(0xff1e73be)),
-                  ), 
+                  Chip(
+                    label: Text(
+                      'Technologi',
+                      style: TextStyle(color: Color(0xff1e73be)),
+                    ),
                     shape: RoundedRectangleBorder(
                       side: BorderSide(color: Color(0xff1E73BE)),
                       borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -201,10 +228,16 @@ class NewsDetailPage extends StatelessWidget {
                     child: TextField(
                       decoration: InputDecoration(
                         hintText: 'Add a comment ...',
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(color: Color(0xff1E73BE), width: 1.0),
+                          borderSide: BorderSide(
+                            color: Color(0xff1E73BE),
+                            width: 1.0,
+                          ),
                         ),
                       ),
                     ),

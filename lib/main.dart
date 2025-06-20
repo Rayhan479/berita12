@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Berita12',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.indigo, useMaterial3: true),
-      initialRoute: '/', // Ganti dengan rute awal yang diinginkan
+      initialRoute: '/', 
       routes: {
         '/': (context) => const SplashScreenPage(),
         '/login': (context) => const LoginPage(),
@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
         '/mynews': (context) => const MyNewsPage(),
         '/news': (context) => const NewsDetailPage(),
         '/notification': (context) => const NotificationPage(),
+        '/news': (context) => const NewsDetailPage(),
       },
     );
   }
