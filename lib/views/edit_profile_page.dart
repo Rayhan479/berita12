@@ -3,7 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+  final String initialName;
+  final String initialEmail;
+  final String initialPassword;
+  final File? initialImage;
+
+  const EditProfilePage({
+    super.key,
+    required this.initialName,
+    required this.initialEmail,
+    required this.initialPassword,
+    this.initialImage,
+  });
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -13,9 +24,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
   File? _imageFile;
   final picker = ImagePicker();
 
-  final nameController = TextEditingController(text: 'Berita12');
-  final emailController = TextEditingController(text: 'berita12@gmail.com');
-  final passwordController = TextEditingController(text: '********');
+  late TextEditingController nameController;
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController(text: widget.initialName);
+    emailController = TextEditingController(text: widget.initialEmail);
+    passwordController = TextEditingController(text: widget.initialPassword);
+    _imageFile = widget.initialImage;
+  }
 
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -27,22 +47,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _saveProfile() {
-    String name = nameController.text;
-    String email = emailController.text;
-    String password = passwordController.text;
-
-    // Simulasi penyimpanan
-    debugPrint("Saved: $name, $email, $password");
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Profile updated!")),
-    );
-
-    // Kirim data kembali ke halaman profile
     Navigator.pop(context, {
-      'name': name,
-      'email': email,
-      'password': password,
+      'name': nameController.text,
+      'email': emailController.text,
+      'password': passwordController.text,
       'image': _imageFile,
     });
   }
@@ -51,8 +59,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: _buildBottomBar(),
-      floatingActionButton: _buildFAB(),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -81,9 +88,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   children: [
                     CircleAvatar(
                       radius: 60,
-                      backgroundImage: _imageFile != null
-                          ? FileImage(_imageFile!)
-                          : const AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
+                      backgroundImage:
+                          _imageFile != null
+                              ? FileImage(_imageFile!)
+                              : const AssetImage(
+                                    'assets/images/profile_placeholder.png',
+                                  )
+                                  as ImageProvider,
                     ),
                     const SizedBox(height: 8),
                     TextButton(
@@ -100,15 +111,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ),
               const SizedBox(height: 24),
-              _buildTextField(controller: nameController, hint: 'Nama'),
+              _buildLabeledField('Nama', nameController),
               const SizedBox(height: 12),
-              _buildTextField(controller: emailController, hint: 'Email'),
+              _buildLabeledField('Email', emailController),
               const SizedBox(height: 12),
-              _buildTextField(
-                controller: passwordController,
-                hint: 'Password',
-                obscureText: true,
-              ),
+              _buildLabeledField('Password', passwordController, obscure: true),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -116,13 +123,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1E73BE),
-                    foregroundColor: Colors.white, // Warna teks jadi putih
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: _saveProfile,
-                  child: const Text('Save', style: TextStyle(fontSize: 16)),
+                  child: const Text('Simpan', style: TextStyle(fontSize: 16)),
                 ),
               ),
             ],
@@ -132,65 +139,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    bool obscureText = false,
+  Widget _buildLabeledField(
+    String label,
+    TextEditingController controller, {
+    bool obscure = false,
   }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: Colors.grey[300],
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        TextField(
+          controller: controller,
+          obscureText: obscure,
+          decoration: InputDecoration(
+            hintText: label,
+            filled: true,
+            fillColor: Colors.grey[300],
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 16,
+              horizontal: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFAB() {
-    return FloatingActionButton(
-      backgroundColor: const Color(0xFF1E73BE),
-      onPressed: () {},
-      child: const Icon(Icons.add, size: 32),
-    );
-  }
-
-  Widget _buildBottomBar() {
-    return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
-      notchMargin: 6.0,
-      color: const Color(0xFF1E73BE),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.home, color: Colors.white),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.bookmark_outline, color: Colors.white),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 48),
-          IconButton(
-            icon: const Icon(Icons.poll, color: Colors.white),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.person_outline, color: Colors.white),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      ],
     );
   }
 }

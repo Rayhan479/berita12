@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart'; // Pastikan file ini ada
+import 'login_page.dart';
 import 'package:berita12/services/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -16,11 +16,14 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _konfirmasiPasswordController = TextEditingController();
   final _apiservice = ApiService();
+
   final FocusNode _namaFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _konfirmasiFocus = FocusNode();
-  //bool _isLoading= false;
+
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   void register() async {
     if (_namaController.text.isEmpty ||
@@ -31,62 +34,24 @@ class _RegisterPageState extends State<RegisterPage> {
       ).showSnackBar(const SnackBar(content: Text("Harus di isi semua")));
       return;
     }
-    /*setState(() {
-      _isLoading = true;
-    });*/
+
     try {
       await _apiservice.register(
         name: _namaController.text,
         email: _emailController.text,
         password: _passwordController.text,
       );
-      /*setState(() {
-        _isLoading = false;
-      });*/
       if (!mounted) return;
-      _showSuccessDialog(); // <-- TAMBAHKAN INI DI SINI
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Registrasi Berhasil!"),
-          backgroundColor: Colors.green,
-        ),
-      );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
+      _showSuccessDialog();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Registrasi Gagal : $e.toString()}"),
+          content: Text("Registrasi Gagal: $e"),
           backgroundColor: Colors.red,
         ),
       );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _namaFocus.addListener(() => setState(() {}));
-    _emailFocus.addListener(() => setState(() {}));
-    _passwordFocus.addListener(() => setState(() {}));
-    _konfirmasiFocus.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _namaController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _konfirmasiPasswordController.dispose();
-
-    _namaFocus.dispose();
-    _emailFocus.dispose();
-    _passwordFocus.dispose();
-    _konfirmasiFocus.dispose();
-
-    super.dispose();
   }
 
   void _showSuccessDialog() {
@@ -142,18 +107,39 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      register(); // <--- ini yang harus dipanggil
+      register();
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    // const blueColor = Color(0xFF1976D2);
+  void initState() {
+    super.initState();
+    _namaFocus.addListener(() => setState(() {}));
+    _emailFocus.addListener(() => setState(() {}));
+    _passwordFocus.addListener(() => setState(() {}));
+    _konfirmasiFocus.addListener(() => setState(() {}));
+  }
 
+  @override
+  void dispose() {
+    _namaController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _konfirmasiPasswordController.dispose();
+
+    _namaFocus.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    _konfirmasiFocus.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Gradient background
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -163,8 +149,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-
-          // Decorative circle
           Positioned(
             bottom: -50,
             left: -50,
@@ -177,7 +161,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
@@ -187,7 +170,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-
                     const Center(
                       child: Text(
                         'Daftar Akun\nBaru',
@@ -199,10 +181,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 36),
-
-                    // Nama Lengkap
                     const _FieldLabel(label: 'Nama Lengkap'),
                     _buildTextField(
                       controller: _namaController,
@@ -211,10 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       hint: 'Masukkan Nama Lengkap',
                       validatorMsg: 'Nama harus diisi',
                     ),
-
                     const SizedBox(height: 18),
-
-                    // Email
                     const _FieldLabel(label: 'Email'),
                     _buildTextField(
                       controller: _emailController,
@@ -223,10 +199,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       hint: 'Masukkan Email',
                       validatorMsg: 'Email harus diisi',
                     ),
-
                     const SizedBox(height: 18),
-
-                    // Password
                     const _FieldLabel(label: 'Password'),
                     _buildTextField(
                       controller: _passwordController,
@@ -234,12 +207,14 @@ class _RegisterPageState extends State<RegisterPage> {
                       icon: Icons.lock,
                       hint: 'Masukkan Password',
                       validatorMsg: 'Password harus diisi',
-                      obscure: true,
+                      obscure: _obscurePassword,
+                      toggleObscure: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
-
                     const SizedBox(height: 18),
-
-                    // Konfirmasi Password
                     const _FieldLabel(label: 'Konfirmasi Password'),
                     _buildTextField(
                       controller: _konfirmasiPasswordController,
@@ -247,13 +222,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       icon: Icons.lock_outline,
                       hint: 'Masukkan Konfirmasi Password',
                       validatorMsg: 'Konfirmasi Password harus diisi',
-                      obscure: true,
+                      obscure: _obscureConfirmPassword,
+                      toggleObscure: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
                       confirmPassword: _passwordController.text,
                     ),
-
                     const SizedBox(height: 30),
-
-                    // Tombol Daftar
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -276,9 +253,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 16),
-
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -304,7 +279,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -323,6 +297,7 @@ class _RegisterPageState extends State<RegisterPage> {
     required String hint,
     required String validatorMsg,
     bool obscure = false,
+    VoidCallback? toggleObscure,
     String? confirmPassword,
   }) {
     return TextFormField(
@@ -331,6 +306,13 @@ class _RegisterPageState extends State<RegisterPage> {
       obscureText: obscure,
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
+        suffixIcon:
+            toggleObscure != null
+                ? IconButton(
+                  icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
+                  onPressed: toggleObscure,
+                )
+                : null,
         hintText: focusNode.hasFocus ? '' : hint,
         filled: true,
         fillColor: Colors.white,
@@ -341,9 +323,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return validatorMsg;
-        }
+        if (value == null || value.isEmpty) return validatorMsg;
         if (confirmPassword != null && value != confirmPassword) {
           return 'Password tidak cocok';
         }

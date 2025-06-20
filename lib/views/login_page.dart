@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   bool isUsernameFocused = false;
   bool isPasswordFocused = false;
   bool isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -194,23 +195,35 @@ Navigator.pushReplacement(
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
-                      controller: passwordController,
-                      focusNode: passwordFocus,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock),
-                        hintText: isPasswordFocused ? '' : 'Masukkan Password',
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Password harus diisi' : null,
-                    ),
+  controller: passwordController,
+  focusNode: passwordFocus,
+  obscureText: _obscurePassword,
+  decoration: InputDecoration(
+    prefixIcon: const Icon(Icons.lock),
+    hintText: isPasswordFocused ? '' : 'Masukkan Password',
+    filled: true,
+    fillColor: Colors.white,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide.none,
+    ),
+    suffixIcon: IconButton(
+      icon: Icon(
+        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+        color: Colors.grey,
+      ),
+      onPressed: () {
+        setState(() {
+          _obscurePassword = !_obscurePassword;
+        });
+      },
+    ),
+  ),
+  validator: (value) =>
+      value == null || value.isEmpty ? 'Password harus diisi' : null,
+),
+
                     const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
