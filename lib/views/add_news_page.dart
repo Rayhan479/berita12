@@ -1,6 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'api_service.dart';
+import '../services/api_service.dart';
 import 'package:berita12/model/article_model.dart';
 
 class CreateNewsPage extends StatefulWidget {

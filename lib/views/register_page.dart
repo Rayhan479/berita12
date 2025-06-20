@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart'; // Pastikan file ini ada
-import 'package:berita12/views/api_service.dart';
+import 'package:berita12/services/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -23,8 +23,12 @@ class _RegisterPageState extends State<RegisterPage> {
   //bool _isLoading= false;
 
   void register() async {
-    if (_namaController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Harus di isi semua")));
+    if (_namaController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Harus di isi semua")));
       return;
     }
     /*setState(() {
@@ -40,19 +44,24 @@ class _RegisterPageState extends State<RegisterPage> {
         _isLoading = false;
       });*/
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text("Registrasi Berhasil!"),
-        backgroundColor: Colors.green,
-      ));
+      _showSuccessDialog(); // <-- TAMBAHKAN INI DI SINI
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Registrasi Berhasil!"),
+          backgroundColor: Colors.green,
+        ),
+      );
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Registrasi Gagal : $e.toString()}"),
-        backgroundColor: Colors.red,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Registrasi Gagal : $e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -133,7 +142,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      _showSuccessDialog();
+      register(); // <--- ini yang harus dipanggil
     }
   }
 

@@ -1,9 +1,6 @@
-import 'package:berita12/views/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'api_service.dart';
-
+import 'package:berita12/views/home_page.dart';
+import 'package:berita12/services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,36 +11,15 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _apiservice = ApiService();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final FocusNode usernameFocus = FocusNode();
   final FocusNode passwordFocus = FocusNode();
+  final ApiService _apiService = ApiService();
 
   bool isUsernameFocused = false;
   bool isPasswordFocused = false;
   bool isLoading = false;
-
-  void login() async {
-    if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Harus di isi!')));
-      return;
-    }
-    try {
-      await _apiservice.login(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-      if(!mounted)return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Berhasil'), backgroundColor: Colors.green,));
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage(),));
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Gagal : $e.toString()}'), backgroundColor: Colors.red,));
-    }
-  }
 
   @override
   void initState() {
@@ -79,40 +55,41 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('http://45.149.187.204:3000/api/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          "email": usernameController.text,
-          "password": passwordController.text,
-        }),
-      );
+     final result = await _apiService.login(
+  email: usernameController.text.trim(),
+  password: passwordController.text.trim(),
+);
 
-      final data = json.decode(response.body);
+final token = result['token'];
+final user = result['user'];
 
-      if (!mounted) return;
+await _apiService.saveToken(token);
+await _apiService.saveUserInfo(
+  name: user['name'],
+  email: user['email'],
+);
 
-      if (response.statusCode == 200) {
-        // ✅ SIMPAN TOKEN
-        // final token = data['token'];
-        // final prefs = await SharedPreferences.getInstance();
-        // await prefs.setString('token', token);
 
-        if (!mounted) return;
+if (!mounted) return;
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Login Berhasil!')));
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Login gagal')),
-        );
-      }
+ScaffoldMessenger.of(context).showSnackBar(
+  const SnackBar(content: Text('Login Berhasil!')),
+);
+
+Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+    builder: (context) => const HomePage(), // atau HomePage(name: userName, email: userEmail)
+  ),
+);
     } catch (e) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Terjadi kesalahan jaringan')),
+        SnackBar(
+          content: Text('Login Gagal: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
 
@@ -160,19 +137,15 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    Center(
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Masuk Ke\nBerita12',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                    const Center(
+                      child: Text(
+                        'Masuk Ke\nBerita12',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -182,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(color: Colors.red, fontSize: 18),
                         children: [
                           TextSpan(
-                            text: 'Username',
+                            text: 'Email',
                             style: TextStyle(color: Colors.white),
                           ),
                         ],
@@ -193,23 +166,18 @@ class _LoginPageState extends State<LoginPage> {
                       controller: usernameController,
                       focusNode: usernameFocus,
                       decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.person),
-                        hintText: isUsernameFocused ? '' : 'Masukkan Username',
+                        prefixIcon: const Icon(Icons.email),
+                        hintText: isUsernameFocused ? '' : 'Masukkan Email',
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      validator:
-                          (value) =>
-                              value == null || value.isEmpty
-                                  ? 'Username harus diisi'
-                                  : null,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Email harus diisi' : null,
                     ),
                     const SizedBox(height: 20),
                     const Text.rich(
@@ -234,19 +202,14 @@ class _LoginPageState extends State<LoginPage> {
                         hintText: isPasswordFocused ? '' : 'Masukkan Password',
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      validator:
-                          (value) =>
-                              value == null || value.isEmpty
-                                  ? 'Password harus diisi'
-                                  : null,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Password harus diisi' : null,
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
@@ -262,17 +225,14 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         onPressed: isLoading ? null : _submitForm,
-                        child:
-                            isLoading
-                                ? const CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.blue,
-                                  ),
-                                )
-                                : const Text(
-                                  'Masuk',
-                                  style: TextStyle(fontSize: 18),
-                                ),
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                              )
+                            : const Text(
+                                'Masuk',
+                                style: TextStyle(fontSize: 18),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 10),
