@@ -66,7 +66,7 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
     content: content,
   );
 
-  final success = await ApiService().CreateNewsPage(article);
+  final success = await ApiService().createNewsPage(article);
 
   setState(() => _isLoading = false);
 
