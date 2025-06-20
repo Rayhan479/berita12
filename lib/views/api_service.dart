@@ -1,12 +1,16 @@
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 //import 'model/user_model.dart';
-//import 'article_model.dart';
+import '../model/article_model.dart';
 import 'package:berita12/auth_service.dart';
 //import 'register_page.dart';
 
+
+
 class ApiService {
   final String baseUrl = "https://rest-api-berita.vercel.app/api/v1";
+  final _storage = const FlutterSecureStorage();
   final AuthService _authService = AuthService();
 
   // Helper untuk memproses semua respons dari API secara konsisten
@@ -164,16 +168,42 @@ class ApiService {
   }*/
 
   /// Membuat artikel baru.
-  Future<void> createArticle(Map<String, dynamic> articleData) async {
-    await _authenticatedRequest((token) => http.post(
-          Uri.parse('$baseUrl/news'),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer $token',
-          },
-          body: jsonEncode(articleData),
-        ));
+  Future<bool> CreateNewsPage(Article article) async {
+    try {
+      final token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('Token tidak ditemukan');
+
+      final response = await http.post(
+        Uri.parse(baseUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(article.toJson()),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Artikel berhasil dibuat!');
+        return true;
+      } else {
+        print('Gagal membuat artikel: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error saat membuat artikel: $e');
+      return false;
+    }
   }
+  // Future<void> createArticle(Map<String, dynamic> articleData) async {
+  //   await _authenticatedRequest((token) => http.post(
+  //         Uri.parse('$baseUrl/news'),
+  //         headers: {
+  //           'Content-Type': 'application/json; charset=UTF-8',
+  //           'Authorization': 'Bearer $token',
+  //         },
+  //         body: jsonEncode(articleData),
+  //       ));
+  // }
 
   /// Mengupdate artikel.
   Future<void> updateArticle(
