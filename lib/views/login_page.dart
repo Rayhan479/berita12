@@ -1,7 +1,8 @@
+import 'package:berita12/views/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'api_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,13 +15,34 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _apiservice = ApiService();
   final FocusNode usernameFocus = FocusNode();
   final FocusNode passwordFocus = FocusNode();
 
   bool isUsernameFocused = false;
   bool isPasswordFocused = false;
   bool isLoading = false;
+
+  void login() async {
+    if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Harus di isi!')));
+      return;
+    }
+    try {
+      await _apiservice.login(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      if(!mounted)return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Berhasil'), backgroundColor: Colors.green,));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage(),));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Gagal : $e.toString()}'), backgroundColor: Colors.red,));
+    }
+  }
 
   @override
   void initState() {

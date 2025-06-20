@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'model/user_model.dart';
-import 'article_model.dart';
-import 'auth_service.dart';
+//import 'model/user_model.dart';
+//import 'article_model.dart';
+import 'package:berita12/auth_service.dart';
+//import 'register_page.dart';
 
 class ApiService {
   final String baseUrl = "https://rest-api-berita.vercel.app/api/v1";
@@ -23,14 +24,14 @@ class ApiService {
   }
 
   // Autentikasi Untuk Profile Pengguna Yages;
-  Future<UserModel> getUserProfile() async {
+  /*Future<UserModel> getUserProfile() async {
     final response = await _authenticatedRequest((token) => http.get(
           Uri.parse('$baseUrl/auth/'),
           headers: {'Authorization': 'Bearer $token'},
         ));
     final data = _processResponse(response);
     return UserModel.fromJson(data);
-  }
+  }*/
   // Memperbaharui Nama Penggunanya;
   Future<void> updateUserName(String newName) async {
     await _authenticatedRequest((token) => http.put(
@@ -52,18 +53,17 @@ class ApiService {
   }
 
   /// Mengambil daftar artikel dengan dukungan pagination.
-  Future<List<Article>> getArticles({String? category, int page = 1, int limit = 10}) async {
+  /*Future<List<Article>> getArticles({String? category, int page = 1, int limit = 10}) async {
     var url = '$baseUrl/news?page=$page&limit=$limit';
     if (category != null && category.isNotEmpty) {
       url += '&category=$category';
     }
     
     final response = await http.get(Uri.parse(url));
-    final data = _processResponse(response);
-    final List<dynamic> articlesData = data['articles'];
-    List<Article> articles = articlesData.map((json) => Article.fromJson(json)).toList();
+    //final data = _processResponse(response);
+    //final List<dynamic> articlesData = data['articles'];
 
-    // Lakukan filtering di sisi klien jika ada searchQuery
+    List<Article> articles = articlesData.map((json) => Article.fromJson(json)).toList();
     if (searchQuery != null && searchQuery.isNotEmpty) {
       articles = articles.where((article) {
         // Mencocokkan searchQuery dengan judul artikel (case-insensitive)
@@ -72,10 +72,10 @@ class ApiService {
     }
 
     return articles;
-  }
+  }*/
 
   /// Melakukan login pengguna.
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> login({required String email, required String password}) async {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/login'),
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
@@ -104,7 +104,7 @@ class ApiService {
   }
 
   /// Mengambil semua artikel yang telah di-bookmark oleh pengguna.
-  Future<List<Article>> getBookmarkedArticles() async {
+  /*Future<List<Article>> getBookmarkedArticles() async {
     final response = await _authenticatedRequest((token) {
       return http.get(
         Uri.parse('$baseUrl/news/bookmarks/list'),
@@ -122,7 +122,7 @@ class ApiService {
     } else {
       throw Exception('Format data bookmark tidak valid.');
     }
-  }
+  }*/
 
   /// Memeriksa status bookmark sebuah artikel.
   Future<bool> checkBookmarkStatus(String articleId) async {
@@ -153,7 +153,7 @@ class ApiService {
   }
 
   /// Mengambil artikel yang dibuat oleh pengguna.
-  Future<List<Article>> getMyArticles() async {
+  /*Future<List<Article>> getMyArticles() async {
     final response = await _authenticatedRequest((token) => http.get(
           Uri.parse('$baseUrl/news/user/me'),
           headers: {'Authorization': 'Bearer $token'},
@@ -161,7 +161,7 @@ class ApiService {
     final data = _processResponse(response);
     final List<dynamic> articlesData = data['articles'];
     return articlesData.map((json) => Article.fromJson(json)).toList();
-  }
+  }*/
 
   /// Membuat artikel baru.
   Future<void> createArticle(Map<String, dynamic> articleData) async {
