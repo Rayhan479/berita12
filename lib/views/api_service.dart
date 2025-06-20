@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 //import 'model/user_model.dart';
@@ -169,31 +170,48 @@ class ApiService {
 
   /// Membuat artikel baru.
   Future<bool> CreateNewsPage(Article article) async {
-    try {
-      final token = await _storage.read(key: 'jwt_token');
-      if (token == null) throw Exception('Token tidak ditemukan');
+  try {
+    final token = await _storage.read(key: 'jwt_token');
+    if (token == null) throw Exception('Token tidak ditemukan');
 
-      final response = await http.post(
-        Uri.parse(baseUrl),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(article.toJson()),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        print('Artikel berhasil dibuat!');
-        return true;
-      } else {
-        print('Gagal membuat artikel: ${response.body}');
-        return false;
+    final response = await http.post(
+      Uri.parse('$baseUrl/news'), // ✅ perbaiki di sini
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "title": article.title,
+        "category": article.category,
+        "readTime": article.readTime,
+        "imageUrl": article.imageUrl,
+        "isTrending": false, // ✅ WAJIB ADA
+        "tags": article.tags,
+        "content": article.content,
+      }),
+    );
+    if (kDebugMode) {
+      print('🔎 Status Code: ${response.statusCode}');
+      print('🔎 Response Body: ${response.body}');
+    }
+    
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (kDebugMode) {
+        print('✅ Artikel berhasil dibuat!');
       }
-    } catch (e) {
-      print('Error saat membuat artikel: $e');
+      return true;
+    } else {
+      print('❌ Gagal membuat artikel: ${response.statusCode}');
+      print('Response body: ${response.body}');
       return false;
     }
+  } catch (e) {
+    print('❌ Error saat membuat artikel: $e');
+    return false;
+    
   }
+}
+
   // Future<void> createArticle(Map<String, dynamic> articleData) async {
   //   await _authenticatedRequest((token) => http.post(
   //         Uri.parse('$baseUrl/news'),
