@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart'; // Pastikan file ini ada
+import 'package:berita12/views/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -14,11 +15,46 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _konfirmasiPasswordController = TextEditingController();
-
+  final _apiservice = ApiService();
   final FocusNode _namaFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _konfirmasiFocus = FocusNode();
+  //bool _isLoading= false;
+
+  void register() async {
+    if (_namaController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Harus di isi semua")));
+      return;
+    }
+    /*setState(() {
+      _isLoading = true;
+    });*/
+    try {
+      await _apiservice.register(
+        name: _namaController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      /*setState(() {
+        _isLoading = false;
+      });*/
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text("Registrasi Berhasil!"),
+        backgroundColor: Colors.green,
+      ));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Registrasi Gagal : $e.toString()}"),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
 
   @override
   void initState() {
