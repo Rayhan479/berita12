@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:berita12/services/api_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -9,10 +10,26 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String name = 'Berita12';
-  String email = 'berita12@gmail.com';
+  String name = 'Memuat...';
+  String email = 'Memuat...';
   String password = '********';
   File? imageFile;
+
+  final ApiService _apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userInfo = await _apiService.getUserInfo();
+    setState(() {
+      name = userInfo['name'] ?? 'Tidak ditemukan';
+      email = userInfo['email'] ?? 'Tidak ditemukan';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
