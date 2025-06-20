@@ -4,7 +4,6 @@ import 'package:berita12/views/splash_screen_page.dart';
 import 'package:berita12/views/login_page.dart';
 import 'package:berita12/views/register_page.dart';
 import 'package:berita12/views/profile_page.dart';
-import 'package:berita12/views/edit_profile_page.dart';
 import 'package:berita12/views/home_page.dart';
 import 'package:berita12/views/bookmark_page.dart';
 import 'package:berita12/views/add_news_page.dart';
@@ -33,7 +32,6 @@ class MyApp extends StatelessWidget {
         '/bookmark': (context) => const BookmarkPage(),
         '/add': (context) => const CreateNewsPage(),
         '/profile': (context) => const ProfilePage(),
-        '/editprofile': (context) => const EditProfilePage(),
         '/mynews': (context) => const MyNewsPage(),
         '/news': (context) => const NewsDetailPage(),
         '/notification': (context) => const NotificationPage(),

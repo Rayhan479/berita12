@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:berita12/services/api_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'edit_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,24 +11,25 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String name = 'Memuat...';
-  String email = 'Memuat...';
+  final _storage = const FlutterSecureStorage();
+  String name = 'Berita12';
+  String email = 'berita12@gmail.com';
   String password = '********';
   File? imageFile;
-
-  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    _loadUserInfo();
   }
 
-  Future<void> _loadUserData() async {
-    final userInfo = await _apiService.getUserInfo();
+  Future<void> _loadUserInfo() async {
+    final storedName = await _storage.read(key: 'user_name');
+    final storedEmail = await _storage.read(key: 'user_email');
+
     setState(() {
-      name = userInfo['name'] ?? 'Tidak ditemukan';
-      email = userInfo['email'] ?? 'Tidak ditemukan';
+      name = storedName ?? name;
+      email = storedEmail ?? email;
     });
   }
 
@@ -42,10 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/logo_berita12.png',
-              width: 70,
-            ),
+            Image.asset('assets/images/logo_berita12.png', width: 70),
             const SizedBox(width: 8),
             const Text(
               'Profile',
@@ -64,16 +63,31 @@ class _ProfilePageState extends State<ProfilePage> {
           Center(
             child: CircleAvatar(
               radius: 50,
-              backgroundImage: imageFile != null
-                  ? FileImage(imageFile!)
-                  : const AssetImage('assets/images/profile_placeholder.png')
-                      as ImageProvider,
+              backgroundImage:
+                  imageFile != null
+                      ? FileImage(imageFile!)
+                      : const AssetImage(
+                            'assets/images/profile_placeholder.png',
+                          )
+                          as ImageProvider,
             ),
           ),
           const SizedBox(height: 10),
           GestureDetector(
             onTap: () async {
-              final result = await Navigator.pushNamed(context, '/editprofile');
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => EditProfilePage(
+                        initialName: name,
+                        initialEmail: email,
+                        initialPassword: password,
+                        initialImage: imageFile,
+                      ),
+                ),
+              );
+
               if (result != null && result is Map) {
                 setState(() {
                   name = result['name'] ?? name;
@@ -96,7 +110,13 @@ class _ProfilePageState extends State<ProfilePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text(
+                  "Nama",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
                 TextField(
                   readOnly: true,
                   decoration: InputDecoration(
@@ -109,6 +129,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                const Text(
+                  "Email",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
                 TextField(
                   readOnly: true,
                   decoration: InputDecoration(
@@ -121,6 +146,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                const Text(
+                  "Password",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
                 TextField(
                   obscureText: true,
                   readOnly: true,
@@ -136,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 15),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: SizedBox(
@@ -187,7 +217,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () {
                     Navigator.pushNamed(context, '/mynews');
                   },
-                  icon: const Icon(Icons.how_to_vote_outlined, color: Colors.white),
+                  icon: const Icon(
+                    Icons.how_to_vote_outlined,
+                    color: Colors.white,
+                  ),
                 ),
                 IconButton(
                   onPressed: () {
