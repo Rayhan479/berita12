@@ -38,20 +38,6 @@ class Article {
     };
   }
 
-<<<<<<< HEAD
-  /// Digunakan saat menerima data dari API
-  factory Article.fromJson(Map<String, dynamic> json) {
-    return Article(
-      title: json['title'] ?? '',
-      category: json['category'] ?? '',
-      readTime: json['readTime'] ?? '',
-      imageUrl: json['imageUrl'] ?? '',
-      isTrending: json['isTrending'] ?? false,
-      tags: List<String>.from(json['tags'] ?? []),
-      content: json['content'] ?? '',
-    );
-  }
-=======
   factory Article.fromJson(Map<String, dynamic> json) {
   return Article(
     id: json['id'] ?? UniqueKey().toString(),
@@ -72,5 +58,4 @@ class Article {
 
 
 
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
 }

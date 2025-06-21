@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -74,38 +74,17 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
     final String? category = selectedCategory;
     final String content = contentController.text;
     final String tagsText = tagController.text;
-<<<<<<< HEAD
-
-    if (title.isEmpty ||
-        category == null ||
-        content.isEmpty ||
-        tagsText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Silakan lengkapi semua data, termasuk gambar cover.'),
-        ),
-=======
     final String? imageUrl = _coverImageUrl; // Mengambil URL gambar dari state
 
     if (title.isEmpty || category == null || content.isEmpty || tagsText.isEmpty || imageUrl == null || imageUrl.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Silakan lengkapi semua data, termasuk URL gambar cover.')),
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
       );
       setState(() => _isLoading = false);
       return;
     }
 
     final article = Article(
-<<<<<<< HEAD
-      title: title,
-      category: category,
-      readTime: '20 Jun 2025',
-      imageUrl:
-          'https://image.idntimes.com/post/20191216/2-9d35e61e811b05aec40f694b1c1cc187.jpg',
-      tags: tagsText.split(',').map((e) => e.trim()).toList(),
-      content: content,
-=======
       id: UniqueKey().toString(), // Untuk artikel baru, ID sementara atau null jika backend yang generate
       title: title,
       category: category,
@@ -114,36 +93,12 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
       tags: tagsText.split(',').map((e) => e.trim()).toList(),
       content: content,
       // likes dan comments bisa null untuk artikel baru
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
     );
 
     final success = await ApiService().createNewsPage(article);
 
     setState(() => _isLoading = false);
 
-<<<<<<< HEAD
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Artikel berhasil dipublikasikan!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      Future.delayed(const Duration(milliseconds: 500), () {
-        Navigator.pushReplacementNamed(context, '/mynews');
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gagal membuat artikel.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-=======
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(success ? 'Artikel berhasil dipublikasikan!' : 'Gagal membuat artikel.'),
@@ -164,7 +119,6 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
   }
 
 
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -201,32 +155,6 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                   height: 150,
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
-<<<<<<< HEAD
-                    image:
-                        _coverImage != null
-                            ? DecorationImage(
-                              image: FileImage(_coverImage!),
-                              fit: BoxFit.cover,
-                            )
-                            : null,
-                  ),
-                  child:
-                      _coverImage == null
-                          ? const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.add, size: 28, color: Colors.blue),
-                                SizedBox(height: 4),
-                                Text(
-                                  "Add Cover Photos",
-                                  style: TextStyle(color: Colors.black54),
-                                ),
-                              ],
-                            ),
-                          )
-                          : null,
-=======
                     // Tampilkan gambar dari URL jika ada
                     image: _coverImageUrl != null && _coverImageUrl!.isNotEmpty
                         ? DecorationImage(
@@ -247,7 +175,6 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                           ),
                         )
                       : null, // Jika ada gambar, tidak perlu child lain
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
                 ),
               ),
             ),

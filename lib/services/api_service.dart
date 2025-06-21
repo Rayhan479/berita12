@@ -123,11 +123,6 @@ class ApiService {
     );
   }
 
-<<<<<<< HEAD
-  Future<bool> createNewsPage(Article article) async {
-    try {
-      final token = await _storage.read(key: 'jwt_token');
-=======
   /// Mengambil artikel yang dibuat oleh pengguna yang terautentikasi.
   Future<List<Article>> getMyArticles() async {
     final response = await _authenticatedRequest(
@@ -209,7 +204,6 @@ class ApiService {
   Future<bool> createNewsPage(Article article) async {
     try {
       final token = await _authService.getToken(); // Menggunakan token dari AuthService
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
       if (token == null) throw Exception('Token tidak ditemukan');
 
       final response = await http.post(
@@ -228,17 +222,6 @@ class ApiService {
           "content": article.content,
         }),
       );
-<<<<<<< HEAD
-
-      if (kDebugMode) {
-        print("🔐 Token: $token");
-        print("📤 Body: ${jsonEncode(article.toJson())}");
-        print("📥 Status: ${response.statusCode}");
-        print("📥 Body: ${response.body}");
-      }
-
-      return response.statusCode == 200 || response.statusCode == 201;
-=======
       if (kDebugMode) {
         print('TOKEN: $token');
         print('REQUEST BODY: ${jsonEncode(article.toJson())}');
@@ -263,7 +246,6 @@ class ApiService {
 
         return false;
       }
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
     } catch (e) {
       if (kDebugMode) {
         print('❌ Error saat membuat artikel: $e');
@@ -284,16 +266,15 @@ class ApiService {
       ),
     );
   }
-<<<<<<< HEAD
 
-  Future<void> deleteArticle(String articleId) async {
-    await _authenticatedRequest(
-      (token) => http.delete(
-        Uri.parse('$baseUrl/news/$articleId'),
-        headers: {'Authorization': 'Bearer $token'},
-      ),
-    );
-  }
+  // Future<void> deleteArticle(String articleId) async {
+  //   await _authenticatedRequest(
+  //     (token) => http.delete(
+  //       Uri.parse('$baseUrl/news/$articleId'),
+  //       headers: {'Authorization': 'Bearer $token'},
+  //     ),
+  //   );
+  // }
 
   /// ✅ Fungsi baru: Ambil semua artikel milik user
   Future<List<Article>> fetchUserArticles() async {
@@ -315,6 +296,4 @@ class ApiService {
       throw Exception("Format data tidak sesuai (harus List).");
     }
   }
-=======
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
 }

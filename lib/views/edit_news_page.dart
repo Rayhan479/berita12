@@ -27,7 +27,8 @@ class _EditNewsPageState extends State<EditNewsPage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController tagController = TextEditingController();
-  final TextEditingController imageUrlController = TextEditingController(); // Controller untuk input URL gambar
+  final TextEditingController imageUrlController =
+      TextEditingController(); // Controller untuk input URL gambar
   final FlutterSecureStorage storage = const FlutterSecureStorage();
   // final ImagePicker _picker = ImagePicker(); // Tidak diperlukan jika hanya input URL
   bool _isLoading = false;
@@ -38,10 +39,13 @@ class _EditNewsPageState extends State<EditNewsPage> {
     // Inisialisasi controller dengan data dari artikel yang ada
     titleController.text = widget.article.title;
     contentController.text = widget.article.content;
-    tagController.text = widget.article.tags.join(', '); // Gabungkan tags menjadi string
+    tagController.text = widget.article.tags.join(
+      ', ',
+    ); // Gabungkan tags menjadi string
     _coverImageUrl = widget.article.imageUrl;
     selectedCategory = widget.article.category;
-    imageUrlController.text = widget.article.imageUrl; // Isi juga controller URL input
+    imageUrlController.text =
+        widget.article.imageUrl; // Isi juga controller URL input
   }
 
   // Fungsi untuk menampilkan dialog input URL gambar
@@ -90,9 +94,18 @@ class _EditNewsPageState extends State<EditNewsPage> {
     final String tagsText = tagController.text;
     final String? imageUrl = _coverImageUrl;
 
-    if (title.isEmpty || category == null || content.isEmpty || tagsText.isEmpty || imageUrl == null || imageUrl.isEmpty) {
+    if (title.isEmpty ||
+        category == null ||
+        content.isEmpty ||
+        tagsText.isEmpty ||
+        imageUrl == null ||
+        imageUrl.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Silakan lengkapi semua data, termasuk URL gambar cover.')),
+        const SnackBar(
+          content: Text(
+            'Silakan lengkapi semua data, termasuk URL gambar cover.',
+          ),
+        ),
       );
       setState(() => _isLoading = false);
       return;
@@ -102,7 +115,10 @@ class _EditNewsPageState extends State<EditNewsPage> {
     final Map<String, dynamic> updatedData = {
       "title": title,
       "category": category,
-      "readTime": widget.article.readTime, // Pertahankan readTime yang sudah ada atau hitung ulang
+      "readTime":
+          widget
+              .article
+              .readTime, // Pertahankan readTime yang sudah ada atau hitung ulang
       "imageUrl": imageUrl,
       "tags": tagsText.split(',').map((e) => e.trim()).toList(),
       "content": content,
@@ -110,12 +126,18 @@ class _EditNewsPageState extends State<EditNewsPage> {
     };
 
     try {
-      await ApiService().updateArticle(widget.article.id, updatedData); // Panggil API updateArticle
+      await ApiService().updateArticle(
+        widget.article.id,
+        updatedData,
+      ); // Panggil API updateArticle
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Artikel berhasil diperbarui!')),
       );
-      Navigator.pop(context, true); // Kembali ke halaman sebelumnya dengan hasil sukses
+      Navigator.pop(
+        context,
+        true,
+      ); // Kembali ke halaman sebelumnya dengan hasil sukses
     } catch (e) {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -162,31 +184,43 @@ class _EditNewsPageState extends State<EditNewsPage> {
                   height: 150,
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
-                    image: _coverImageUrl != null && _coverImageUrl!.isNotEmpty
-                        ? DecorationImage(
-                            image: NetworkImage(_coverImageUrl!),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
+                    image:
+                        _coverImageUrl != null && _coverImageUrl!.isNotEmpty
+                            ? DecorationImage(
+                              image: NetworkImage(_coverImageUrl!),
+                              fit: BoxFit.cover,
+                            )
+                            : null,
                   ),
-                  child: _coverImageUrl == null || _coverImageUrl!.isEmpty
-                      ? const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add_photo_alternate_outlined, size: 28, color: Colors.blue),
-                              SizedBox(height: 4),
-                              Text("Ketuk untuk Mengubah Gambar Cover (URL)", style: TextStyle(color: Colors.black54)), // Teks disesuaikan
-                            ],
-                          ),
-                        )
-                      : null,
+                  child:
+                      _coverImageUrl == null || _coverImageUrl!.isEmpty
+                          ? const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 28,
+                                  color: Colors.blue,
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Ketuk untuk Mengubah Gambar Cover (URL)",
+                                  style: TextStyle(color: Colors.black54),
+                                ), // Teks disesuaikan
+                              ],
+                            ),
+                          )
+                          : null,
                 ),
               ),
             ),
 
             const SizedBox(height: 24),
-            const Text("News Details", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              "News Details",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 16),
             const Text("Title*", style: TextStyle(fontWeight: FontWeight.w500)),
             const SizedBox(height: 6),
@@ -195,26 +229,37 @@ class _EditNewsPageState extends State<EditNewsPage> {
               decoration: InputDecoration(
                 hintText: "Title",
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            const Text("Select Category*", style: TextStyle(fontWeight: FontWeight.w500)),
+            const Text(
+              "Select Category*",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                 hintText: "Select Category",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
               value: selectedCategory,
-              items: categories.map((cat) {
-                return DropdownMenuItem(value: cat, child: Text(cat));
-              }).toList(),
+              items:
+                  categories.map((cat) {
+                    return DropdownMenuItem(value: cat, child: Text(cat));
+                  }).toList(),
               onChanged: (val) => setState(() => selectedCategory = val),
             ),
             const SizedBox(height: 20),
-            const Text("Add News/Article*", style: TextStyle(fontWeight: FontWeight.w500)),
+            const Text(
+              "Add News/Article*",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
             const SizedBox(height: 6),
             Row(
               children: const [
@@ -235,33 +280,59 @@ class _EditNewsPageState extends State<EditNewsPage> {
               maxLines: 6,
               decoration: InputDecoration(
                 hintText: "Type News/Article Here...",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            const Text("Add Tag*", style: TextStyle(fontWeight: FontWeight.w500)),
+            const Text(
+              "Add Tag*",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
             const SizedBox(height: 6),
             TextField(
               controller: tagController,
               decoration: InputDecoration(
                 hintText: "Tag (pisahkan dengan koma)",
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _updateArticle, // Memanggil _updateArticle
+                onPressed:
+                    _isLoading
+                        ? null
+                        : _updateArticle, // Memanggil _updateArticle
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1E73BE),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                 ),
-                child: _isLoading
-                    ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Text("Update Article", style: TextStyle(color: Colors.white)), // Teks tombol berubah
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : const Text(
+                          "Update Article",
+                          style: TextStyle(color: Colors.white),
+                        ), // Teks tombol berubah
               ),
             ),
             const SizedBox(height: 70),
@@ -290,7 +361,10 @@ class _EditNewsPageState extends State<EditNewsPage> {
                 const SizedBox(width: 10),
                 IconButton(
                   onPressed: () => Navigator.pushNamed(context, '/mynews'),
-                  icon: const Icon(Icons.how_to_vote_outlined, color: Colors.white),
+                  icon: const Icon(
+                    Icons.how_to_vote_outlined,
+                    color: Colors.white,
+                  ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pushNamed(context, '/profile'),

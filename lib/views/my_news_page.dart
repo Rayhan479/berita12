@@ -1,19 +1,17 @@
 import 'package:berita12/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import '../model/article_model.dart';
-import '../services/api_service.dart';
-=======
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:berita12/model/article_model.dart';
+// import '../services/api_service.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:berita12/model/article_model.dart';
 // Pastikan ini diimpor dengan benar
-import 'package:berita12/views/bookmark_page.dart';
-import 'package:berita12/views/add_news_page.dart';
-import 'package:berita12/views/profile_page.dart';
-import 'package:berita12/views/home_page.dart';
-import 'package:berita12/views/edit_news_page.dart'; // Import EditNewsPage yang baru
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
+// import 'package:berita12/views/bookmark_page.dart';
+// import 'package:berita12/views/add_news_page.dart';
+// import 'package:berita12/views/profile_page.dart';
+// import 'package:berita12/views/home_page.dart';
+// import 'package:berita12/views/edit_news_page.dart'; // Import EditNewsPage yang baru
+
 
 class MyNewsPage extends StatefulWidget {
   const MyNewsPage({super.key});
@@ -22,10 +20,6 @@ class MyNewsPage extends StatefulWidget {
   State<MyNewsPage> createState() => _MyNewsPageState();
 }
 
-<<<<<<< HEAD
-class _MyNewsPageState extends State<MyNewsPage> {
-  late Future<List<Article>> _myArticles;
-=======
 class _MyNewsPageState extends State<MyNewsPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<String> _tabs = ['Trending', 'All', 'Latest', 'Teknologi', 'Science', 'Politik'];
@@ -34,14 +28,10 @@ class _MyNewsPageState extends State<MyNewsPage> with SingleTickerProviderStateM
   bool _isLoading = true; // Status loading data
   String? _errorMessage; // Pesan error jika terjadi
   final ApiService _apiService = ApiService(); // Instansiasi ApiService
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
 
   @override
   void initState() {
     super.initState();
-<<<<<<< HEAD
-    _myArticles = ApiService().fetchUserArticles(); // Pastikan ada method ini di api_service.dart
-=======
     _tabController = TabController(length: _tabs.length, vsync: this);
     _fetchMyArticles(); // Panggil fungsi untuk mengambil artikel saat halaman dimuat
   }
@@ -131,21 +121,11 @@ class _MyNewsPageState extends State<MyNewsPage> with SingleTickerProviderStateM
         print('Error deleting article: $e');
       }
     }
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        onPressed: () => Navigator.pushNamed(context, '/add'),
-        backgroundColor: const Color(0xFF1E73BE),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-=======
       appBar: AppBar(
         automaticallyImplyLeading: false, // Menghilangkan tombol back default
         backgroundColor: Colors.white,
@@ -239,7 +219,6 @@ class _MyNewsPageState extends State<MyNewsPage> with SingleTickerProviderStateM
         ),
       ),
       // ======= BottomAppBar + FAB =======
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         color: const Color(0xFF1E73BE),
@@ -273,52 +252,6 @@ class _MyNewsPageState extends State<MyNewsPage> with SingleTickerProviderStateM
           ),
         ),
       ),
-<<<<<<< HEAD
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  Image.asset('assets/images/logo_berita12.png', height: 70),
-                  const SizedBox(width: 8),
-                  const Text('My News', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const Spacer(),
-                  IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-                ],
-              ),
-            ),
-
-            // Content
-            Expanded(
-              child: FutureBuilder<List<Article>>(
-                future: _myArticles,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text("Belum ada berita yang kamu buat."));
-                  }
-
-                  final articles = snapshot.data!;
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: articles.length,
-                    itemBuilder: (context, index) {
-                      final article = articles[index];
-                      return NewsCard(article: article);
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-=======
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () {
@@ -407,73 +340,11 @@ class NewsCard extends StatelessWidget {
             ),
           ),
         ],
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
       ),
     );
   }
 }
 
-<<<<<<< HEAD
-class NewsCard extends StatelessWidget {
-  final Article article;
-  const NewsCard({super.key, required this.article});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 2,
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              bottomLeft: Radius.circular(12),
-            ),
-            child: Image.network(
-              article.imageUrl ?? '',
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, _) => Container(
-                width: 100,
-                height: 100,
-                color: Colors.grey[300],
-                child: const Icon(Icons.broken_image),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    article.title,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: const [
-                      Icon(Icons.thumb_up, color: Colors.blue, size: 16),
-                      SizedBox(width: 4),
-                      Text('316K'),
-                      SizedBox(width: 12),
-                      Icon(Icons.comment, color: Colors.blue, size: 16),
-                      SizedBox(width: 4),
-                      Text('110K'),
-                      Spacer(),
-                      Icon(Icons.edit, size: 16, color: Colors.blue),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-=======
 // Mengubah TabItem agar lebih dinamis jika diperlukan
 class TabItem extends StatelessWidget {
   final String label;
@@ -490,7 +361,6 @@ class TabItem extends StatelessWidget {
           fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           color: isActive ? Colors.black : Colors.grey,
         ),
->>>>>>> 84cfed050d0b1a0fa5ed366cfaef85d44f8f06b9
       ),
     );
   }

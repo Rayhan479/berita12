@@ -1,15 +1,15 @@
 import 'package:berita12/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; // Pastikan ini ada
-import 'dart:convert'; // Pastikan ini ada
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Pastikan ini ada
+// import 'package:http/http.dart' as http; // Pastikan ini ada
+// import 'dart:convert'; // Pastikan ini ada
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Pastikan ini ada
 import 'package:berita12/model/article_model.dart'; // Import Article model // Import ApiService
 import 'package:berita12/views/news_detail_page.dart'; // Untuk navigasi ke detail
-import 'package:berita12/views/home_page.dart'; // Untuk navigasi bottom bar
-import 'package:berita12/views/add_news_page.dart'; // Untuk navigasi bottom bar
-import 'package:berita12/views/my_news_page.dart'; // Untuk navigasi bottom bar
-import 'package:berita12/views/profile_page.dart'; // Untuk navigasi bottom bar
+// import 'package:berita12/views/home_page.dart'; // Untuk navigasi bottom bar
+// import 'package:berita12/views/add_news_page.dart'; // Untuk navigasi bottom bar
+// import 'package:berita12/views/my_news_page.dart'; // Untuk navigasi bottom bar
+// import 'package:berita12/views/profile_page.dart'; // Untuk navigasi bottom bar
 
 
 // Pastikan ApiService dan Article model sudah diperbarui.
