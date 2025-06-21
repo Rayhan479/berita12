@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
+import '../model/article_model.dart';
+import '../services/api_service.dart';
 
-class MyNewsPage extends StatelessWidget {
+class MyNewsPage extends StatefulWidget {
   const MyNewsPage({super.key});
+
+  @override
+  State<MyNewsPage> createState() => _MyNewsPageState();
+}
+
+class _MyNewsPageState extends State<MyNewsPage> {
+  late Future<List<Article>> _myArticles;
+
+  @override
+  void initState() {
+    super.initState();
+    _myArticles = ApiService().fetchUserArticles(); // Pastikan ada method ini di api_service.dart
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ======= BottomAppBar + FAB =======
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        onPressed: () => Navigator.pushNamed(context, '/add'),
+        backgroundColor: const Color(0xFF1E73BE),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         color: const Color(0xFF1E73BE),
@@ -14,33 +35,25 @@ class MyNewsPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
           child: SizedBox(
-            height: 40, // Ubah jadi 40 agar icon terlihat
+            height: 40,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/home');
-                  },
+                  onPressed: () => Navigator.pushNamed(context, '/home'),
                   icon: const Icon(Icons.home_outlined, color: Colors.white),
                 ),
                 IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/bookmark');
-                  },
+                  onPressed: () => Navigator.pushNamed(context, '/bookmark'),
                   icon: const Icon(Icons.bookmark_outline, color: Colors.white),
                 ),
-                const SizedBox(width: 10), // Ruang untuk FAB
+                const SizedBox(width: 10),
                 IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/mynews');
-                  },
+                  onPressed: () => Navigator.pushNamed(context, '/mynews'),
                   icon: const Icon(Icons.how_to_vote, color: Colors.white),
                 ),
                 IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/profile');
-                  },
+                  onPressed: () => Navigator.pushNamed(context, '/profile'),
                   icon: const Icon(Icons.person_outline, color: Colors.white),
                 ),
               ],
@@ -48,17 +61,6 @@ class MyNewsPage extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        onPressed: () {
-          Navigator.pushNamed(context, '/add');
-        },
-        backgroundColor: const Color(0xFF1E73BE),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      // ======= Body Utama =======
       body: SafeArea(
         child: Column(
           children: [
@@ -69,59 +71,35 @@ class MyNewsPage extends StatelessWidget {
                 children: [
                   Image.asset('assets/images/logo_berita12.png', height: 70),
                   const SizedBox(width: 8),
-                  const Text(
-                    'My News',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+                  const Text('My News', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const Spacer(),
                   IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
                 ],
               ),
             ),
 
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search ...',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
-              ),
-            ),
-
-            // Tab Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: SizedBox(
-                height: 35,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    TabItem(label: 'Trending', isActive: true),
-                    TabItem(label: 'All'),
-                    TabItem(label: 'Latest'),
-                    TabItem(label: 'Teknologi'),
-                    TabItem(label: 'Science'),
-                    TabItem(label: 'Politik'),
-                  ],
-                ),
-              ),
-            ),
-
-            // Daftar Berita
+            // Content
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return const NewsCard();
+              child: FutureBuilder<List<Article>>(
+                future: _myArticles,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text("Belum ada berita yang kamu buat."));
+                  }
+
+                  final articles = snapshot.data!;
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: articles.length,
+                    itemBuilder: (context, index) {
+                      final article = articles[index];
+                      return NewsCard(article: article);
+                    },
+                  );
                 },
               ),
             ),
@@ -132,28 +110,9 @@ class MyNewsPage extends StatelessWidget {
   }
 }
 
-class TabItem extends StatelessWidget {
-  final String label;
-  final bool isActive;
-  const TabItem({super.key, required this.label, this.isActive = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 12),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-          color: isActive ? Colors.black : Colors.grey,
-        ),
-      ),
-    );
-  }
-}
-
 class NewsCard extends StatelessWidget {
-  const NewsCard({super.key});
+  final Article article;
+  const NewsCard({super.key, required this.article});
 
   @override
   Widget build(BuildContext context) {
@@ -168,11 +127,17 @@ class NewsCard extends StatelessWidget {
               topLeft: Radius.circular(12),
               bottomLeft: Radius.circular(12),
             ),
-            child: Image.asset(
-              'assets/images/berita.png',
+            child: Image.network(
+              article.imageUrl ?? '',
               width: 100,
               height: 100,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, _) => Container(
+                width: 100,
+                height: 100,
+                color: Colors.grey[300],
+                child: const Icon(Icons.broken_image),
+              ),
             ),
           ),
           Expanded(
@@ -181,9 +146,9 @@ class NewsCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Wow USA Develops news way faster ....',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    article.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Row(

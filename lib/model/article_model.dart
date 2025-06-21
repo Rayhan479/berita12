@@ -17,6 +17,7 @@ class Article {
     required this.content,
   });
 
+  /// Digunakan saat mengirim data ke API
   Map<String, dynamic> toJson() {
     return {
       'title': title,
@@ -28,6 +29,17 @@ class Article {
       'content': content,
     };
   }
+
+  /// Digunakan saat menerima data dari API
+  factory Article.fromJson(Map<String, dynamic> json) {
+    return Article(
+      title: json['title'] ?? '',
+      category: json['category'] ?? '',
+      readTime: json['readTime'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      isTrending: json['isTrending'] ?? false,
+      tags: List<String>.from(json['tags'] ?? []),
+      content: json['content'] ?? '',
+    );
+  }
 }
-
-

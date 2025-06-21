@@ -10,7 +10,6 @@ class ApiService {
   final _storage = const FlutterSecureStorage();
   final AuthService _authService = AuthService();
 
-  // Helper untuk memproses semua respons dari API secara konsisten
   dynamic _processResponse(http.Response response) {
     final body = json.decode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -24,12 +23,10 @@ class ApiService {
     }
   }
 
-  // Menyimpan token ke secure storage
   Future<void> saveToken(String token) async {
     await _storage.write(key: 'jwt_token', value: token);
   }
 
-  // Menyimpan nama dan email user ke secure storage
   Future<void> saveUserInfo({
     required String name,
     required String email,
@@ -38,14 +35,12 @@ class ApiService {
     await _storage.write(key: 'user_email', value: email);
   }
 
-  // Mengambil info user dari secure storage
   Future<Map<String, String?>> getUserInfo() async {
     final name = await _storage.read(key: 'user_name');
     final email = await _storage.read(key: 'user_email');
     return {'name': name, 'email': email};
   }
 
-  // Autentikasi Untuk Profile Pengguna Yages;
   Future<void> updateUserName(String newName) async {
     await _authenticatedRequest(
       (token) => http.put(
@@ -56,7 +51,6 @@ class ApiService {
     );
   }
 
-  // Helper untuk request yang memerlukan otentikasi (token)
   Future<http.Response> _authenticatedRequest(
     Future<http.Response> Function(String token) request,
   ) async {
@@ -67,7 +61,6 @@ class ApiService {
     return await request(token);
   }
 
-  /// Melakukan login pengguna.
   Future<Map<String, dynamic>> login({
     required String email,
     required String password,
@@ -80,7 +73,6 @@ class ApiService {
     return _processResponse(response);
   }
 
-  /// Mendaftarkan pengguna baru.
   Future<Map<String, dynamic>> register({
     required String email,
     required String password,
@@ -100,7 +92,6 @@ class ApiService {
     return _processResponse(response);
   }
 
-  /// Memeriksa status bookmark sebuah artikel.
   Future<bool> checkBookmarkStatus(String articleId) async {
     final response = await _authenticatedRequest((token) {
       return http.get(
@@ -112,7 +103,6 @@ class ApiService {
     return data['isSaved'] ?? false;
   }
 
-  /// Menambahkan artikel ke bookmark.
   Future<void> addBookmark(String articleId) async {
     await _authenticatedRequest(
       (token) => http.post(
@@ -122,7 +112,6 @@ class ApiService {
     );
   }
 
-  /// Menghapus artikel dari bookmark.
   Future<void> removeBookmark(String articleId) async {
     await _authenticatedRequest(
       (token) => http.delete(
@@ -132,67 +121,45 @@ class ApiService {
     );
   }
 
-  /// Membuat artikel baru.
   Future<bool> createNewsPage(Article article) async {
-  try {
-    final token = await _storage.read(key: 'jwt_token');
-    if (token == null) throw Exception('Token tidak ditemukan');
+    try {
+      final token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('Token tidak ditemukan');
 
-    final response = await http.post(
-      Uri.parse('$baseUrl/news'), // ✅ perbaiki di sini
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        "title": article.title,
-        "category": article.category,
-        "readTime": article.readTime,
-        "imageUrl": article.imageUrl,
-        "isTrending": false, // ✅ WAJIB ADA
-        "tags": article.tags,
-        "content": article.content,
-      }),
-    );
-    if (kDebugMode) {
-      print('TOKEN: $token');
-      print('REQUEST BODY: ${jsonEncode(article.toJson())}');
-      print('RESPONSE STATUS: ${response.statusCode}');
-      print('RESPONSE BODY: ${response.body}');
+      final response = await http.post(
+        Uri.parse('$baseUrl/news'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "title": article.title,
+          "category": article.category,
+          "readTime": article.readTime,
+          "imageUrl": article.imageUrl,
+          "isTrending": false,
+          "tags": article.tags,
+          "content": article.content,
+        }),
+      );
 
-      print('🔎 Status Code: ${response.statusCode}');
-      print('🔎 Response Body: ${response.body}');
-      print("🔐 Token digunakan: $token");
-    }
-    
-    if (response.statusCode == 200 || response.statusCode == 201) {
       if (kDebugMode) {
-        print('✅ Artikel berhasil dibuat!');
+        print("🔐 Token: $token");
+        print("📤 Body: ${jsonEncode(article.toJson())}");
+        print("📥 Status: ${response.statusCode}");
+        print("📥 Body: ${response.body}");
       }
-      return true;
-    } else {
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
       if (kDebugMode) {
-        print('❌ Gagal membuat artikel: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        print('❌ Error saat membuat artikel: $e');
       }
-      
       return false;
     }
-  } catch (e) {
-    if (kDebugMode) {
-      print('❌ Error saat membuat artikel: $e');
-    }
-    return false;
-    
   }
-}
 
-
-  /// Mengupdate artikel.
-  Future<void> updateArticle(
-    String articleId,
-    Map<String, dynamic> articleData,
-  ) async {
+  Future<void> updateArticle(String articleId, Map<String, dynamic> articleData) async {
     await _authenticatedRequest(
       (token) => http.put(
         Uri.parse('$baseUrl/news/$articleId'),
@@ -205,7 +172,6 @@ class ApiService {
     );
   }
 
-  /// Menghapus artikel.
   Future<void> deleteArticle(String articleId) async {
     await _authenticatedRequest(
       (token) => http.delete(
@@ -213,5 +179,26 @@ class ApiService {
         headers: {'Authorization': 'Bearer $token'},
       ),
     );
+  }
+
+  /// ✅ Fungsi baru: Ambil semua artikel milik user
+  Future<List<Article>> fetchUserArticles() async {
+    final response = await _authenticatedRequest(
+      (token) => http.get(
+        Uri.parse('$baseUrl/news/me'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    final data = _processResponse(response);
+
+    if (data is List) {
+      return data.map((json) => Article.fromJson(json)).toList();
+    } else {
+      throw Exception("Format data tidak sesuai (harus List).");
+    }
   }
 }
