@@ -1,3 +1,4 @@
+import 'package:berita12/model/article_model.dart';
 import 'package:berita12/views/news_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:berita12/views/splash_screen_page.dart';
@@ -9,6 +10,8 @@ import 'package:berita12/views/bookmark_page.dart';
 import 'package:berita12/views/add_news_page.dart';
 import 'package:berita12/views/my_news_page.dart';
 import 'package:berita12/views/notification_page.dart';
+import 'package:berita12/views/edit_news_page.dart'; // Import EditNewsPage yang baru
+
 
 void main() {
   runApp(const MyApp());
@@ -33,8 +36,25 @@ class MyApp extends StatelessWidget {
         '/add': (context) => const CreateNewsPage(),
         '/profile': (context) => const ProfilePage(),
         '/mynews': (context) => const MyNewsPage(),
-        '/news': (context) => const NewsDetailPage(),
+        // '/news': (context) => const NewsDetailPage(), // Tidak perlu ini jika menggunakan onGenerateRoute
         '/notification': (context) => const NotificationPage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/detail') {
+          // Rute untuk menampilkan detail berita
+          final Article article = settings.arguments as Article;
+          return MaterialPageRoute(
+            builder: (context) => NewsDetailPage(article: article),
+          );
+        } else if (settings.name == '/edit') {
+          // Rute baru untuk mengedit berita
+          final Article article = settings.arguments as Article;
+          return MaterialPageRoute(
+            builder: (context) => EditNewsPage(article: article),
+          );
+        }
+        // Jika rute tidak ditemukan di `routes` dan bukan rute dinamis, kembalikan null
+        return null;
       },
     );
   }

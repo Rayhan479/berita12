@@ -1,4 +1,18 @@
+import 'package:berita12/services/api_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http; // Pastikan ini ada
+import 'dart:convert'; // Pastikan ini ada
+import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Pastikan ini ada
+import 'package:berita12/model/article_model.dart'; // Import Article model // Import ApiService
+import 'package:berita12/views/news_detail_page.dart'; // Untuk navigasi ke detail
+import 'package:berita12/views/home_page.dart'; // Untuk navigasi bottom bar
+import 'package:berita12/views/add_news_page.dart'; // Untuk navigasi bottom bar
+import 'package:berita12/views/my_news_page.dart'; // Untuk navigasi bottom bar
+import 'package:berita12/views/profile_page.dart'; // Untuk navigasi bottom bar
+
+
+// Pastikan ApiService dan Article model sudah diperbarui.
 
 class BookmarkPage extends StatefulWidget {
   const BookmarkPage({super.key});
@@ -10,7 +24,6 @@ class BookmarkPage extends StatefulWidget {
 class _BookmarkPageState extends State<BookmarkPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
   final List<String> _tabs = [
     "Trending",
     "All",
@@ -20,34 +33,77 @@ class _BookmarkPageState extends State<BookmarkPage>
     "Politik",
   ];
 
-  final List<Map<String, String>> _beritaList = [
-    {
-      'title': 'Wow USA Develops news way faster ....',
-      'image':
-          'https://image.idntimes.com/post/20191216/2-9d35e61e811b05aec40f694b1c1cc187.jpg?tr=w-1920,f-webp,q-75&width=1920&format=webp&quality=75',
-      'likes': '316K',
-      'comments': '110K',
-    },
-    {
-      'title': 'Wow USA Develops news way faster ....',
-      'image':
-          'https://cdn1.katadata.co.id/media/images/thumb/2025/04/24/BytePlus-2025_04_24-19_38_38_ac9eaf82bceb2d35497b001e844b0058_960x640_thumb.jpeg',
-      'likes': '316K',
-      'comments': '110K',
-    },
-    {
-      'title': 'Wow USA Develops news way faster ....',
-      'image':
-          'https://media.licdn.com/dms/image/D5612AQHVP143zP7nLg/article-cover_image-shrink_720_1280/0/1686807804814?e=2147483647&v=beta&t=S8NCUTpngKg2mYOSklk6rwyFLicGCHBnu1ZQ5gj3NbM',
-      'likes': '316K',
-      'comments': '110K',
-    },
-  ];
+  List<Article> _bookmarkedArticles = []; // List untuk menyimpan artikel yang di-bookmark
+  bool _isLoading = true;
+  String? _errorMessage;
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
-    _tabController = TabController(length: _tabs.length, vsync: this);
     super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this);
+    _fetchBookmarkedArticles(); // Ambil artikel yang di-bookmark saat halaman dimuat
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchBookmarkedArticles() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    try {
+      final articles = await _apiService.getSavedArticles();
+      setState(() {
+        _bookmarkedArticles = articles;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Gagal memuat bookmark: ${e.toString()}';
+        _isLoading = false;
+      });
+      if (kDebugMode) {
+        print('Error fetching bookmarked articles: $e');
+      }
+      // Anda mungkin ingin mengarahkan pengguna ke halaman login jika token tidak valid
+      if (e.toString().contains('Pengguna belum login')) {
+        // Example: Navigator.pushReplacementNamed(context, '/login');
+      }
+    }
+  }
+
+  // Fungsi untuk menghapus bookmark dari halaman Bookmark
+  Future<void> _removeBookmark(String articleId) async {
+    setState(() {
+      _isLoading = true; // Set loading state while deleting
+    });
+    try {
+      await _apiService.removeBookmark(articleId);
+      // Hapus dari daftar lokal dan refresh UI
+      setState(() {
+        _bookmarkedArticles.removeWhere((article) => article.id == articleId);
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bookmark dihapus!')),
+      );
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Gagal menghapus bookmark: ${e.toString()}';
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $_errorMessage')),
+      );
+      if (kDebugMode) {
+        print('Error removing bookmark: $e');
+      }
+    }
   }
 
   @override
@@ -65,7 +121,6 @@ class _BookmarkPageState extends State<BookmarkPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Row with logo, title, and filter icon
                 Row(
                   children: [
                     Image.asset(
@@ -86,7 +141,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                       icon: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Color(0x4D1E73BE),
+                          color: const Color(0x4D1E73BE),
                           borderRadius: BorderRadius.circular(8),
                           shape: BoxShape.rectangle,
                         ),
@@ -100,7 +155,6 @@ class _BookmarkPageState extends State<BookmarkPage>
                   ],
                 ),
                 const SizedBox(height: 10),
-                // Search bar
                 Container(
                   height: 40,
                   decoration: BoxDecoration(
@@ -122,7 +176,6 @@ class _BookmarkPageState extends State<BookmarkPage>
       ),
       body: Column(
         children: [
-          // Tab Bar
           TabBar(
             isScrollable: true,
             controller: _tabController,
@@ -131,84 +184,107 @@ class _BookmarkPageState extends State<BookmarkPage>
             indicatorColor: Colors.blue,
             tabs: _tabs.map((tab) => Tab(text: tab)).toList(),
           ),
-
-          // List Berita
-          Expanded(
-            child: ListView.builder(
-              itemCount: _beritaList.length,
-              itemBuilder: (context, index) {
-                final berita = _beritaList[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            berita['image']!,
-                            width: 100,
-                            height: 80,
-                            fit: BoxFit.cover,
+          _isLoading
+              ? const Expanded(child: Center(child: CircularProgressIndicator()))
+              : _errorMessage != null
+                  ? Expanded(child: Center(child: Text(_errorMessage!)))
+                  : _bookmarkedArticles.isEmpty
+                      ? const Expanded(child: Center(child: Text('Belum ada artikel yang di-bookmark.')))
+                      : Expanded(
+                          child: RefreshIndicator(
+                            onRefresh: _fetchBookmarkedArticles,
+                            child: ListView.builder(
+                              itemCount: _bookmarkedArticles.length,
+                              itemBuilder: (context, index) {
+                                final article = _bookmarkedArticles[index];
+                                return GestureDetector( // Tambahkan GestureDetector untuk navigasi ke detail
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NewsDetailPage(article: article),
+                                      ),
+                                    );
+                                  },
+                                  child: Card(
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(
+                                              article.imageUrl,
+                                              width: 100,
+                                              height: 80,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) =>
+                                                  Image.network('https://placehold.co/100x80/A0A0A0/FFFFFF?text=No+Image', fit: BoxFit.cover),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  article.title,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 2,
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.thumb_up_alt_outlined,
+                                                      size: 16,
+                                                      color: Colors.blue,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text('20'),
+                                                    const SizedBox(width: 12),
+                                                    const Icon(
+                                                      Icons.chat_bubble_outline,
+                                                      size: 16,
+                                                      color: Colors.grey,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text('120'),
+                                                    const Spacer(),
+                                                    // Tombol Bookmark yang bisa di-toggle (untuk hapus bookmark)
+                                                    IconButton(
+                                                      icon: const Icon(
+                                                        Icons.bookmark, // Selalu terisi di halaman bookmark
+                                                        color: Colors.blue,
+                                                      ),
+                                                      onPressed: () => _removeBookmark(article.id), // Fungsi untuk menghapus
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                berita['title']!,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.thumb_up_alt_outlined,
-                                    size: 16,
-                                    color: Colors.blue,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(berita['likes']!),
-                                  const SizedBox(width: 12),
-                                  const Icon(
-                                    Icons.chat_bubble_outline,
-                                    size: 16,
-                                    color: Colors.grey,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(berita['comments']!),
-                                  const Spacer(),
-                                  const Icon(
-                                    Icons.bookmark,
-                                    color: Colors.blue,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
         ],
       ),
-      // Bottom NavBar
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         color: const Color(0xFF1E73BE),
@@ -217,7 +293,7 @@ class _BookmarkPageState extends State<BookmarkPage>
           padding: const EdgeInsets.symmetric(
             horizontal: 2.0,
             vertical: 8.0,
-          ), // Atur padding di sini
+          ),
           child: SizedBox(
             height: 5,
             child: Row(
@@ -231,11 +307,11 @@ class _BookmarkPageState extends State<BookmarkPage>
                 ),
                 IconButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/bookmark');
+                    // Current page is Bookmark, no navigation needed
                   },
-                  icon: const Icon(Icons.bookmark, color: Colors.white),
+                  icon: const Icon(Icons.bookmark, color: Colors.white), // Ikon bookmark terisi di sini
                 ),
-                const SizedBox(width: 10), // ruang untuk FAB
+                const SizedBox(width: 10),
                 IconButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/mynews');
@@ -256,13 +332,12 @@ class _BookmarkPageState extends State<BookmarkPage>
           ),
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () {
           Navigator.pushNamed(context, '/add');
         },
-        backgroundColor: Color(0xFF1E73BE),
+        backgroundColor: const Color(0xFF1E73BE),
         child: const Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

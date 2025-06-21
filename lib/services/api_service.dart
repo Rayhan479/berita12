@@ -15,9 +15,11 @@ class ApiService {
     final body = json.decode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (body['data'] == null) {
-        throw Exception("Data dari server kosong.");
+        // Terkadang API mengembalikan success:true tapi data:null (misal untuk delete)
+        // Jadi tidak selalu throw exception jika data null, tergantung API
+        return body; // Return body lengkap untuk kasus ini
       }
-      return body['data'];
+      return body['data']; // Mengembalikan hanya bagian 'data'
     } else {
       final message = body['message'] ?? 'Terjadi kesalahan tidak diketahui';
       throw Exception(message);
@@ -60,7 +62,7 @@ class ApiService {
   Future<http.Response> _authenticatedRequest(
     Future<http.Response> Function(String token) request,
   ) async {
-    final token = await _authService.getToken();
+    final token = await _authService.getToken(); // Mengambil token dari AuthService
     if (token == null) {
       throw Exception('Pengguna belum login. Silakan login terlebih dahulu.');
     }
@@ -132,60 +134,136 @@ class ApiService {
     );
   }
 
+  /// Mengambil artikel yang dibuat oleh pengguna yang terautentikasi.
+  Future<List<Article>> getMyArticles() async {
+    final response = await _authenticatedRequest(
+      (token) => http.get(
+        Uri.parse('$baseUrl/news/user/me'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // Pastikan decodedData adalah Map sebelum mengakses kuncinya
+      final dynamic processedData = _processResponse(response);
+      if (processedData is Map<String, dynamic> && processedData['articles'] is List) { // Dihapus decodedData != null
+        final List<dynamic> articlesData = processedData['articles'];
+        return articlesData.map((item) => Article.fromJson(item)).toList();
+      } else {
+        throw Exception('Format data artikel pengguna tidak valid');
+      }
+    } else {
+      throw Exception('Gagal memuat artikel: ${response.statusCode}');
+    }
+  }
+
+  /// Mengambil daftar artikel yang di-bookmark oleh pengguna.
+  Future<List<Article>> getSavedArticles() async {
+    final response = await _authenticatedRequest(
+      (token) => http.get(
+        Uri.parse('$baseUrl/news/bookmarks/list'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final dynamic responseData = _processResponse(response); // Ini akan menjadi isi dari 'data'
+      
+      List<dynamic> articlesData;
+
+      if (responseData is List) {
+        // Case 1: 'data' langsung berupa list artikel
+        articlesData = responseData;
+      } else if (responseData is Map) {
+        // Case 2: 'data' berupa map dan list artikel ada di bawah kunci 'bookmarks' atau 'articles'
+        if (responseData['bookmarks'] is List) {
+          articlesData = responseData['bookmarks'];
+        } else if (responseData['articles'] is List) {
+          articlesData = responseData['articles'];
+        } else {
+          throw Exception('Kunci artikel tidak ditemukan dalam data bookmark');
+        }
+      } else {
+        throw Exception('Respons data bookmark tidak dalam format yang diharapkan (bukan List atau Map)');
+      }
+
+      return articlesData.map((item) => Article.fromJson(item)).toList();
+    } else {
+      throw Exception('Gagal memuat artikel yang di-bookmark: ${response.statusCode}');
+    }
+  }
+
+
+  /// Menghapus artikel.
+  Future<void> deleteArticle(String articleId) async {
+    await _authenticatedRequest(
+      (token) => http.delete(
+        Uri.parse('$baseUrl/news/$articleId'), // Menggunakan ID artikel
+        headers: {'Authorization': 'Bearer $token'},
+      ),
+    );
+  }
+
+
   /// Membuat artikel baru.
   Future<bool> createNewsPage(Article article) async {
-  try {
-    final token = await _storage.read(key: 'jwt_token');
-    if (token == null) throw Exception('Token tidak ditemukan');
+    try {
+      final token = await _authService.getToken(); // Menggunakan token dari AuthService
+      if (token == null) throw Exception('Token tidak ditemukan');
 
-    final response = await http.post(
-      Uri.parse('$baseUrl/news'), // ✅ perbaiki di sini
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        "title": article.title,
-        "category": article.category,
-        "readTime": article.readTime,
-        "imageUrl": article.imageUrl,
-        "isTrending": false, // ✅ WAJIB ADA
-        "tags": article.tags,
-        "content": article.content,
-      }),
-    );
-    if (kDebugMode) {
-      print('TOKEN: $token');
-      print('REQUEST BODY: ${jsonEncode(article.toJson())}');
-      print('RESPONSE STATUS: ${response.statusCode}');
-      print('RESPONSE BODY: ${response.body}');
+      final response = await http.post(
+        Uri.parse('$baseUrl/news'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "title": article.title,
+          "category": article.category,
+          "readTime": article.readTime,
+          "imageUrl": article.imageUrl,
+          "isTrending": false,
+          "tags": article.tags,
+          "content": article.content,
+        }),
+      );
+      if (kDebugMode) {
+        print('TOKEN: $token');
+        print('REQUEST BODY: ${jsonEncode(article.toJson())}');
+        print('RESPONSE STATUS: ${response.statusCode}');
+        print('RESPONSE BODY: ${response.body}');
 
-      print('🔎 Status Code: ${response.statusCode}');
-      print('🔎 Response Body: ${response.body}');
-      print("🔐 Token digunakan: $token");
-    }
-    
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      if (kDebugMode) {
-        print('✅ Artikel berhasil dibuat!');
+        print('🔎 Status Code: ${response.statusCode}');
+        print('🔎 Response Body: ${response.body}');
+        print("🔐 Token digunakan: $token");
       }
-      return true;
-    } else {
-      if (kDebugMode) {
-        print('❌ Gagal membuat artikel: ${response.statusCode}');
-        print('Response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (kDebugMode) {
+          print('✅ Artikel berhasil dibuat!');
+        }
+        return true;
+      } else {
+        if (kDebugMode) {
+          print('❌ Gagal membuat artikel: ${response.statusCode}');
+          print('Response body: ${response.body}');
+        }
+
+        return false;
       }
-      
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Error saat membuat artikel: $e');
+      }
       return false;
     }
-  } catch (e) {
-    if (kDebugMode) {
-      print('❌ Error saat membuat artikel: $e');
-    }
-    return false;
-    
   }
-}
 
 
   /// Mengupdate artikel.
@@ -201,16 +279,6 @@ class ApiService {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode(articleData),
-      ),
-    );
-  }
-
-  /// Menghapus artikel.
-  Future<void> deleteArticle(String articleId) async {
-    await _authenticatedRequest(
-      (token) => http.delete(
-        Uri.parse('$baseUrl/news/$articleId'),
-        headers: {'Authorization': 'Bearer $token'},
       ),
     );
   }

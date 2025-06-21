@@ -1,23 +1,22 @@
-import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../services/api_service.dart';
 import 'package:berita12/model/article_model.dart';
+// import 'package:image_picker/image_picker.dart'; // Tidak diperlukan jika hanya input URL
 
+class EditNewsPage extends StatefulWidget {
+  final Article article; // Menerima objek Article untuk diedit
 
-
-class CreateNewsPage extends StatefulWidget {
-  const CreateNewsPage({super.key});
+  const EditNewsPage({super.key, required this.article});
 
   @override
-  State<CreateNewsPage> createState() => _CreateNewsPageState();
+  State<EditNewsPage> createState() => _EditNewsPageState();
 }
 
-class _CreateNewsPageState extends State<CreateNewsPage> {
-  // Ubah _coverImage dari File? menjadi String? untuk menyimpan URL
-  String? _coverImageUrl; // Mengubah tipe data untuk menyimpan URL
+class _EditNewsPageState extends State<EditNewsPage> {
+  String? _coverImageUrl;
   String? selectedCategory;
   final List<String> categories = [
     "Teknologi",
@@ -28,17 +27,30 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController tagController = TextEditingController();
-  final TextEditingController imageUrlController = TextEditingController(); // Controller baru untuk input URL gambar
+  final TextEditingController imageUrlController = TextEditingController(); // Controller untuk input URL gambar
   final FlutterSecureStorage storage = const FlutterSecureStorage();
+  // final ImagePicker _picker = ImagePicker(); // Tidak diperlukan jika hanya input URL
   bool _isLoading = false;
 
-  // Mengubah _pickImage menjadi _showImageUrlInputDialog
+  @override
+  void initState() {
+    super.initState();
+    // Inisialisasi controller dengan data dari artikel yang ada
+    titleController.text = widget.article.title;
+    contentController.text = widget.article.content;
+    tagController.text = widget.article.tags.join(', '); // Gabungkan tags menjadi string
+    _coverImageUrl = widget.article.imageUrl;
+    selectedCategory = widget.article.category;
+    imageUrlController.text = widget.article.imageUrl; // Isi juga controller URL input
+  }
+
+  // Fungsi untuk menampilkan dialog input URL gambar
   Future<void> _showImageUrlInputDialog() async {
     String? newImageUrl = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Masukkan URL Gambar Cover'),
+          title: const Text('Masukkan URL Gambar Cover Baru'),
           content: TextField(
             controller: imageUrlController,
             decoration: const InputDecoration(hintText: "URL Gambar"),
@@ -68,15 +80,15 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
     }
   }
 
-
-  void _submitArticle() async {
+  // Fungsi untuk mengupdate artikel
+  void _updateArticle() async {
     setState(() => _isLoading = true);
 
     final String title = titleController.text;
     final String? category = selectedCategory;
     final String content = contentController.text;
     final String tagsText = tagController.text;
-    final String? imageUrl = _coverImageUrl; // Mengambil URL gambar dari state
+    final String? imageUrl = _coverImageUrl;
 
     if (title.isEmpty || category == null || content.isEmpty || tagsText.isEmpty || imageUrl == null || imageUrl.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -86,40 +98,34 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
       return;
     }
 
-    final article = Article(
-      id: UniqueKey().toString(), // Untuk artikel baru, ID sementara atau null jika backend yang generate
-      title: title,
-      category: category,
-      readTime: '20 Jun 2025', // Atau hitung berdasarkan panjang konten
-      imageUrl: imageUrl, // Gunakan URL gambar yang diinput
-      tags: tagsText.split(',').map((e) => e.trim()).toList(),
-      content: content,
-      // likes dan comments bisa null untuk artikel baru
-    );
+    // Buat Map data yang akan dikirim ke API update
+    final Map<String, dynamic> updatedData = {
+      "title": title,
+      "category": category,
+      "readTime": widget.article.readTime, // Pertahankan readTime yang sudah ada atau hitung ulang
+      "imageUrl": imageUrl,
+      "tags": tagsText.split(',').map((e) => e.trim()).toList(),
+      "content": content,
+      // isTrending, likes, comments biasanya tidak diupdate dari halaman ini
+    };
 
-    final success = await ApiService().createNewsPage(article);
-
-    setState(() => _isLoading = false);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(success ? 'Artikel berhasil dipublikasikan!' : 'Gagal membuat artikel.'),
-        backgroundColor: success ? Colors.green : Colors.red,
-      ),
-    );
-    if (success) {
-      // Bersihkan form setelah sukses
-      titleController.clear();
-      contentController.clear();
-      tagController.clear();
-      imageUrlController.clear();
-      setState(() {
-        selectedCategory = null;
-        _coverImageUrl = null;
-      });
+    try {
+      await ApiService().updateArticle(widget.article.id, updatedData); // Panggil API updateArticle
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Artikel berhasil diperbarui!')),
+      );
+      Navigator.pop(context, true); // Kembali ke halaman sebelumnya dengan hasil sukses
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memperbarui artikel: ${e.toString()}')),
+      );
+      if (kDebugMode) {
+        print('Error updating article: $e');
+      }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +140,7 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
         ),
         centerTitle: false,
         title: const Text(
-          "Create News",
+          "Edit News", // Judul berubah
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
@@ -144,7 +150,6 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              // Panggil fungsi baru untuk input URL
               onTap: _showImageUrlInputDialog,
               child: DottedBorder(
                 borderType: BorderType.RRect,
@@ -157,10 +162,9 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                   height: 150,
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
-                    // Tampilkan gambar dari URL jika ada
                     image: _coverImageUrl != null && _coverImageUrl!.isNotEmpty
                         ? DecorationImage(
-                            image: NetworkImage(_coverImageUrl!), // Menggunakan NetworkImage
+                            image: NetworkImage(_coverImageUrl!),
                             fit: BoxFit.cover,
                           )
                         : null,
@@ -170,13 +174,13 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.add_photo_alternate_outlined, size: 28, color: Colors.blue), // Ganti ikon
+                              Icon(Icons.add_photo_alternate_outlined, size: 28, color: Colors.blue),
                               SizedBox(height: 4),
-                              Text("Tambahkan URL Gambar Cover", style: TextStyle(color: Colors.black54)), // Ganti teks
+                              Text("Ketuk untuk Mengubah Gambar Cover (URL)", style: TextStyle(color: Colors.black54)), // Teks disesuaikan
                             ],
                           ),
                         )
-                      : null, // Jika ada gambar, tidak perlu child lain
+                      : null,
                 ),
               ),
             ),
@@ -249,7 +253,7 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _submitArticle,
+                onPressed: _isLoading ? null : _updateArticle, // Memanggil _updateArticle
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1E73BE),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -257,7 +261,7 @@ class _CreateNewsPageState extends State<CreateNewsPage> {
                 ),
                 child: _isLoading
                     ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Text("Publish Now", style: TextStyle(color: Colors.white)),
+                    : const Text("Update Article", style: TextStyle(color: Colors.white)), // Teks tombol berubah
               ),
             ),
             const SizedBox(height: 70),

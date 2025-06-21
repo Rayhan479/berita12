@@ -1,50 +1,45 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
 class AuthService {
-  final String _tokenKey = 'auth_token';
+  // Gunakan FlutterSecureStorage untuk penyimpanan yang lebih aman
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final String _tokenKey = 'jwt_token'; // Sesuaikan kunci token jika perlu
   final String _userKey = 'user_profile'; // Kunci untuk menyimpan data user
 
   // --- Token Management ---
   Future<void> saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, token);
+    await _storage.write(key: _tokenKey, value: token);
   }
 
   Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
+    return await _storage.read(key: _tokenKey);
   }
 
   Future<void> deleteToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
+    await _storage.delete(key: _tokenKey);
   }
 
-  // --- User Profile Management (BARU) ---
-
-  /// Menyimpan data profil pengguna ke SharedPreferences.
+  // --- User Profile Management ---
+  /// Menyimpan data profil pengguna ke FlutterSecureStorage.
   Future<void> saveUserProfile(Map<String, dynamic> userData) async {
-    final prefs = await SharedPreferences.getInstance();
     // Konversi map ke string JSON untuk disimpan
-    await prefs.setString(_userKey, json.encode(userData));
+    await _storage.write(key: _userKey, value: json.encode(userData));
   }
 
-  /// Mengambil data profil pengguna dari SharedPreferences.
+  /// Mengambil data profil pengguna dari FlutterSecureStorage.
   Future<Map<String, dynamic>?> getUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userString = prefs.getString(_userKey);
+    final userString = await _storage.read(key: _userKey);
     if (userString != null) {
       // Konversi string JSON kembali ke map
-      return json.decode(userString);
+      return json.decode(userString) as Map<String, dynamic>;
     }
     return null;
   }
 
-  /// Menghapus data profil pengguna dari SharedPreferences.
+  /// Menghapus data profil pengguna dari FlutterSecureStorage.
   Future<void> deleteUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_userKey);
+    await _storage.delete(key: _userKey);
   }
 
   // --- Logout (DIPERBARUI) ---
